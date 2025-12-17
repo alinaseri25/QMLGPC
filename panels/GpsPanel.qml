@@ -241,15 +241,22 @@ Item {
 
         // نمودار ماهواره‌ها
         SatelliteView {
-            theme: root.theme
             id: satelliteView
+            theme: root.theme  // ⭐ حتماً این خط باشه
             Layout.fillWidth: true
-            Layout.preferredHeight: 400
+            Layout.preferredHeight: 450
             Layout.margins: 16
             Layout.bottomMargin: 32
 
             function updateSatellites() {
                 satellites = gpsManager.getSatellites()
+                console.log("🛰️ Satellites updated:", satellites.length)
+                for (var i = 0; i < satellites.length; i++) {
+                    console.log("  - ID:", satellites[i].id,
+                               "Signal:", satellites[i].signalStrength,
+                               "System:", satellites[i].system,
+                               "InUse:", satellites[i].inUse)
+                }
             }
 
             Connections {
@@ -257,6 +264,10 @@ Item {
                 function onSatellitesUpdated() {
                     satelliteView.updateSatellites()
                 }
+            }
+
+            Component.onCompleted: {
+                updateSatellites()
             }
         }
     }

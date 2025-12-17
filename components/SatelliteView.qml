@@ -1,11 +1,10 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import QMLGPC
-import "../components"
 
 Rectangle {
     id: root
+
     required property var theme
 
     color: theme.surface
@@ -15,30 +14,40 @@ Rectangle {
 
     property var satellites: []
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
-        anchors.margins: theme.cardPadding
-        spacing: theme.spacingMedium
+        anchors.margins: 16
+        spacing: 12
 
         // هدر
         Text {
-            width: parent.width  // ✨ حذف anchors.centerIn
             text: "ماهواره‌های دریافتی"
-            font.pixelSize: theme.fontSizeLarge
+            font.pixelSize: 16
             font.bold: true
             color: theme.text
-            horizontalAlignment: Text.AlignHCenter
+            Layout.fillWidth: true
+            horizontalAlignment: theme.isRTL ? Text.AlignRight : Text.AlignLeft
+        }
+
+        // خط جداکننده
+        Rectangle {
+            Layout.fillWidth: true
+            height: 1
+            color: theme.border
         }
 
         // نمودار میله‌ای
         ScrollView {
-            width: parent.width
-            height: parent.height - 40
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             clip: true
+            ScrollBar.horizontal.policy: ScrollBar.AsNeeded
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
 
             Flow {
                 width: parent.width
-                spacing: theme.spacingSmall
+                spacing: 12
+                layoutDirection: theme.isRTL ? Qt.RightToLeft : Qt.LeftToRight
 
                 Repeater {
                     model: root.satellites
@@ -56,12 +65,15 @@ Rectangle {
 
         // پیام خالی
         Text {
-            width: parent.width  // ✨ به جای anchors.horizontalCenter
             visible: root.satellites.length === 0
+            Layout.alignment: Qt.AlignCenter
+            Layout.fillWidth: true
+            Layout.fillHeight: true
             text: "در انتظار دریافت اطلاعات ماهواره..."
-            font.pixelSize: theme.fontSizeMedium
+            font.pixelSize: 14
             color: theme.textSecondary
             horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
         }
     }
 }

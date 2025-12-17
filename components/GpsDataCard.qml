@@ -1,62 +1,82 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 
 Rectangle {
     id: root
+
     required property var theme
-
     property string title: ""
-    property string value: "---"
+    property string value: ""
     property string unit: ""
-    property string icon: "📍"
+    property string icon: ""
 
-    implicitHeight: 100
-    implicitWidth: 150
-
+    implicitWidth: 180
+    implicitHeight: 120
     color: theme.cardBackground
-    radius: theme.cardRadius
+    radius: theme.radius
     border.color: theme.cardBorder
     border.width: 1
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: theme.cardPadding
-        spacing: theme.spacingSmall
+        anchors.margins: 16
+        spacing: 8
 
-        // آیکون
-        Text {
-            Layout.alignment: Qt.AlignHCenter
-            text: root.icon
-            font.pixelSize: 32
-        }
-
-        // عنوان
-        Text {
-            Layout.fillWidth: true
-            text: root.title
-            font.pixelSize: theme.fontSizeSmall
-            color: theme.textSecondary
-            horizontalAlignment: Text.AlignHCenter
-            wrapMode: Text.WordWrap
-        }
-
-        // مقدار + واحد
+        // ردیف بالا: آیکون + تایتل
         RowLayout {
             Layout.fillWidth: true
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 4
+            spacing: 8
+            layoutDirection: theme.isRTL ? Qt.RightToLeft : Qt.LeftToRight
+
+            Text {
+                text: root.icon
+                font.pixelSize: 18
+                color: theme.text
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Text {
+                text: root.title
+                font.pixelSize: 13
+                color: theme.textSecondary
+                Layout.fillWidth: true
+                elide: Text.ElideRight
+                horizontalAlignment: theme.isRTL ? Text.AlignRight : Text.AlignLeft
+                Layout.alignment: Qt.AlignVCenter
+            }
+        }
+
+        // فاصله انعطاف‌پذیر
+        Item {
+            Layout.fillHeight: true
+            Layout.minimumHeight: 10
+        }
+
+        // ردیف پایین: مقدار + واحد
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+            layoutDirection: theme.isRTL ? Qt.RightToLeft : Qt.LeftToRight
 
             Text {
                 text: root.value
-                font.pixelSize: theme.fontSizeLarge
+                font.pixelSize: 24
                 font.bold: true
-                color: theme.textPrimary
+                color: theme.text
+                Layout.alignment: Qt.AlignVCenter
             }
 
             Text {
                 text: root.unit
-                font.pixelSize: theme.fontSizeMedium
+                font.pixelSize: 13
                 color: theme.textSecondary
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            // فضای خالی برای چپ‌چین/راست‌چین
+            Item {
+                Layout.fillWidth: true
             }
         }
     }

@@ -1,11 +1,11 @@
 import QtQuick
 import QtQuick.Controls
-import QMLGPC
+import QtQuick.Layouts
 
 Item {
     id: root
-    width: 60
-    height: 150
+    width: 70
+    height: 180
 
     required property var theme
     property int satelliteId: 0
@@ -13,20 +13,18 @@ Item {
     property int systemType: 0
     property bool inUse: false
 
-    // تابع تبدیل نوع سیستم به نام
     function getSystemName(type) {
         switch(type) {
             case 0: return "GPS"
-            case 1: return "GLO"  // GLONASS
-            case 2: return "GAL"  // Galileo
-            case 3: return "BDS"  // BeiDou
-            case 4: return "QZS"  // QZSS
-            case 5: return "NAV"  // NavIC
+            case 1: return "GLO"
+            case 2: return "GAL"
+            case 3: return "BDS"
+            case 4: return "QZS"
+            case 5: return "NAV"
             default: return "UNK"
         }
     }
 
-    // ✅ استفاده از رنگ‌های موجود در theme
     function getSignalColor(strength) {
         if (strength >= 40) return theme.accentGreen
         if (strength >= 30) return theme.primary
@@ -34,66 +32,109 @@ Item {
         return theme.accentRed
     }
 
-    Column {
+    ColumnLayout {
         anchors.fill: parent
-        spacing: 4
+        spacing: 6
 
         // میله سیگنال
         Item {
-            width: parent.width
-            height: 100
+            Layout.fillWidth: true
+            Layout.preferredHeight: 120
+            Layout.minimumHeight: 120
 
+            // پس‌زمینه میله
             Rectangle {
+                id: backgroundBar
                 anchors.bottom: parent.bottom
                 width: parent.width
-                height: Math.max((root.signalStrength / 50) * 100, 5)
+                height: parent.height
+                color: theme.surface
+                radius: 6
+                opacity: 0.3
+                border.color: theme.border
+                border.width: 1
+            }
+
+            // میله اصلی سیگنال
+            Rectangle {
+                id: signalBar
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: parent.width
+                height: Math.max((root.signalStrength / 50) * 120, 10)
                 color: getSignalColor(root.signalStrength)
-                radius: 4
-                opacity: root.inUse ? 1.0 : 0.5
+                radius: 6
+                opacity: root.inUse ? 1.0 : 0.6
 
                 Behavior on height {
-                    NumberAnimation { duration: 300; easing.type: Easing.OutQuad }
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutCubic
+                    }
                 }
 
-                // مقدار سیگنال
+                Behavior on color {
+                    ColorAnimation { duration: 300 }
+                }
+
+                // مقدار سیگنال (عدد)
                 Text {
                     anchors.centerIn: parent
                     text: Math.round(root.signalStrength)
-                    font.pixelSize: 10
+                    font.pixelSize: 14
                     font.bold: true
                     color: "white"
-                    visible: root.signalStrength > 0
+                    visible: root.signalStrength > 8
+                    style: Text.Outline
+                    styleColor: "black"
                 }
             }
         }
 
         // شماره ماهواره
         Text {
-            width: parent.width
-            text: root.satelliteId.toString()
+            Layout.fillWidth: true
+            text: "ID: " + root.satelliteId.toString()
             font.pixelSize: 11
             font.bold: true
-            color: theme.text  // ✅ تصحیح: primaryTextColor → text
+            color: theme.text
             horizontalAlignment: Text.AlignHCenter
+            elide: Text.ElideRight
         }
 
         // نوع سیستم
-        Text {
-            width: parent.width
-            text: getSystemName(root.systemType)
-            font.pixelSize: 9
-            color: theme.textSecondary  // ✅ تصحیح: secondaryTextColor → textSecondary
-            horizontalAlignment: Text.AlignHCenter
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 22
+            color: theme.surface
+            radius: 4
+            border.color: theme.border
+            border.width: 1
+
+            Text {
+                anchors.centerIn: parent
+                text: getSystemName(root.systemType)
+                font.pixelSize: 10
+                font.bold: true
+                color: theme.textSecondary
+            }
         }
 
         // نشانگر "در حال استفاده"
         Rectangle {
             visible: root.inUse
-            width: 6
-            height: 6
-            radius: 3
-            color: theme.accentGreen  // ✅ تصحیح: successColor → accentGreen
-            anchors.horizontalCenter: parent.horizontalCenter
+            Layout.preferredWidth: 10
+            Layout.preferredHeight: 10
+            Layout.alignment: Qt.AlignHCenter
+            radius: 5
+            color: theme.accentGreen
+
+            SequentialAnimation on opacity {
+                running: root.inUse
+                loops: Animation.Infinite
+                NumberAnimation { to: 0.2; duration: 700 }
+                NumberAnimation { to: 1.0; duration: 700 }
+            }
         }
     }
 }
