@@ -180,148 +180,97 @@ ApplicationWindow {
     // دیالوگ تنظیمات
     Dialog {
         id: settingsDialog
-        title: appTheme.isRTL ? "تنظیمات" : "Settings"
-        anchors.centerIn: parent
-        width: Math.min(window.width * 0.9, 400)
-        height: Math.min(window.height * 0.6, 350)
+        title: "تنظیمات"
         modal: true
-
-        background: Rectangle {
-            color: appTheme.surface
-            border.color: appTheme.border
-            border.width: 1
-            radius: appTheme.radius
-        }
-
-        header: Rectangle {
-            width: parent.width
-            height: 60
-            color: appTheme.primary
-            radius: appTheme.radius
-
-            Text {
-                anchors.centerIn: parent
-                text: appTheme.isRTL ? "⚙️ تنظیمات" : "⚙️ Settings"
-                font.pixelSize: 20
-                font.bold: true
-                color: "white"
-            }
-        }
+        anchors.centerIn: parent
+        width: Math.min(parent.width * 0.8, 400)
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: appTheme.spacingLarge
-            spacing: appTheme.spacingLarge
+            spacing: 20
 
-            // حالت تاریک/روشن
+            // Dark Mode
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                Text {
+                    text: "حالت تاریک"
+                    font.pixelSize: 14
+                    color: appTheme.text
+                    Layout.fillWidth: true
+                }
+
+                Switch {
+                    id: darkModeSwitch
+                    checked: appTheme.isDarkMode
+                    onCheckedChanged: appTheme.isDarkMode = checked
+                }
+            }
+
+            // RTL Mode
+            RowLayout {
+                Layout.fillWidth: true
+                spacing: 12
+
+                Text {
+                    text: "راست به چپ (RTL)"
+                    font.pixelSize: 14
+                    color: appTheme.text
+                    Layout.fillWidth: true
+                }
+
+                Switch {
+                    id: rtlSwitch
+                    checked: appTheme.isRTL
+                    onCheckedChanged: appTheme.isRTL = checked
+                }
+            }
+
             Rectangle {
                 Layout.fillWidth: true
-                height: 70
-                color: appTheme.hoverColor
-                radius: appTheme.radius
-                border.color: appTheme.border
-                border.width: 1
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: appTheme.spacing
-                    spacing: appTheme.spacing
-
-                    Column {
-                        Layout.fillWidth: true
-                        spacing: 4
-
-                        Text {
-                            text: appTheme.isRTL ? "🌓 حالت شب/روز" : "🌓 Dark/Light Mode"
-                            color: appTheme.text
-                            font.pixelSize: 16
-                            font.bold: true
-                        }
-
-                        Text {
-                            text: appTheme.isRTL
-                                ? (appTheme.isDarkMode ? "حالت تاریک فعال" : "حالت روشن فعال")
-                                : (appTheme.isDarkMode ? "Dark mode enabled" : "Light mode enabled")
-                            color: appTheme.textSecondary
-                            font.pixelSize: 12
-                        }
-                    }
-
-                    Switch {
-                        checked: appTheme.isDarkMode
-                        onToggled: appTheme.isDarkMode = checked
-                    }
-                }
+                height: 1
+                color: appTheme.border
             }
 
-            // جهت زبان RTL/LTR
-            Rectangle {
+            // Mock GPS Mode (جدید)
+            RowLayout {
                 Layout.fillWidth: true
-                height: 70
-                color: appTheme.hoverColor
-                radius: appTheme.radius
-                border.color: appTheme.border
-                border.width: 1
+                spacing: 12
 
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.margins: appTheme.spacing
-                    spacing: appTheme.spacing
+                Text {
+                    text: "حالت تست GPS (بدون ماهواره واقعی)"
+                    font.pixelSize: 14
+                    color: appTheme.text
+                    Layout.fillWidth: true
+                    wrapMode: Text.WordWrap
+                }
 
-                    Column {
-                        Layout.fillWidth: true
-                        spacing: 4
-
-                        Text {
-                            text: appTheme.isRTL ? "🔄 جهت زبان" : "🔄 Language Direction"
-                            color: appTheme.text
-                            font.pixelSize: 16
-                            font.bold: true
+                Switch {
+                    id: mockGpsSwitch
+                    checked: gpsManager.useMockData
+                    onCheckedChanged: {
+                        gpsManager.useMockData = checked
+                        // اگر GPS فعاله، restart کن
+                        if (gpsManager.isValid) {
+                            gpsManager.stopUpdates()
+                            gpsManager.startUpdates()
                         }
-
-                        Text {
-                            text: appTheme.isRTL
-                                ? (appTheme.isRTL ? "راست به چپ (فارسی)" : "چپ به راست (انگلیسی)")
-                                : (appTheme.isRTL ? "Right-to-Left (Persian)" : "Left-to-Right (English)")
-                            color: appTheme.textSecondary
-                            font.pixelSize: 12
-                        }
-                    }
-
-                    Switch {
-                        checked: appTheme.isRTL
-                        onToggled: appTheme.isRTL = checked
                     }
                 }
             }
 
-            Item {
-                Layout.fillHeight: true
-            }
-
-            // دکمه بستن
-            Button {
+            Text {
                 Layout.fillWidth: true
-                Layout.preferredHeight: 50
-                text: appTheme.isRTL ? "✓ تایید" : "✓ OK"
-
-                background: Rectangle {
-                    color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
-                    radius: appTheme.radius
-                }
-
-                contentItem: Text {
-                    text: parent.text
-                    color: "white"
-                    font.pixelSize: 16
-                    font.bold: true
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                onClicked: settingsDialog.close()
+                text: "⚠️ این حالت فقط برای تست در محیط‌هایی که GPS ندارند استفاده شود"
+                font.pixelSize: 11
+                color: appTheme.accentOrange
+                wrapMode: Text.WordWrap
+                visible: mockGpsSwitch.checked
             }
         }
+
+        standardButtons: Dialog.Close
     }
 
     // دیالوگ درباره

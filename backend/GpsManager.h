@@ -2,47 +2,34 @@
 #define GPSMANAGER_H
 
 #include <QObject>
-#include <QGeoSatelliteInfoSource>
-#include <QGeoPositionInfo>
-#include <QGeoSatelliteInfo>
-#include <QVariantList>
-#include <QTimer>
-#include <QGeoPositionInfo>
 #include <QGeoPositionInfoSource>
+#include <QGeoPositionInfo>
+#include <QGeoSatelliteInfoSource>
+#include <QGeoSatelliteInfo>
+#include <QTimer>
+#include <QVariantList>
 
 class GpsManager : public QObject
 {
     Q_OBJECT
-
-    // موقعیت جغرافیایی
     Q_PROPERTY(double latitude READ latitude NOTIFY positionChanged)
     Q_PROPERTY(double longitude READ longitude NOTIFY positionChanged)
     Q_PROPERTY(double altitude READ altitude NOTIFY positionChanged)
-
-    // سرعت و جهت
     Q_PROPERTY(double speed READ speed NOTIFY positionChanged)
     Q_PROPERTY(double direction READ direction NOTIFY positionChanged)
-
-    // دقت
     Q_PROPERTY(double horizontalAccuracy READ horizontalAccuracy NOTIFY positionChanged)
     Q_PROPERTY(double verticalAccuracy READ verticalAccuracy NOTIFY positionChanged)
-
-    // زمان
     Q_PROPERTY(QString timestamp READ timestamp NOTIFY positionChanged)
-
-    // وضعیت
-    Q_PROPERTY(bool isValid READ isValid NOTIFY positionChanged)
+    Q_PROPERTY(bool isValid READ isValid NOTIFY validityChanged)
     Q_PROPERTY(QString statusMessage READ statusMessage NOTIFY statusMessageChanged)
-
-    // ماهواره‌ها
     Q_PROPERTY(int satelliteCount READ satelliteCount NOTIFY satellitesUpdated)
     Q_PROPERTY(int satellitesInUse READ satellitesInUse NOTIFY satellitesUpdated)
+    Q_PROPERTY(bool useMockData READ useMockData WRITE setUseMockData NOTIFY useMockDataChanged)
 
 public:
     explicit GpsManager(QObject *parent = nullptr);
     ~GpsManager();
 
-    // Getters
     double latitude() const { return m_latitude; }
     double longitude() const { return m_longitude; }
     double altitude() const { return m_altitude; }
@@ -55,31 +42,36 @@ public:
     QString statusMessage() const { return m_statusMessage; }
     int satelliteCount() const { return m_satelliteCount; }
     int satellitesInUse() const { return m_satellitesInUse; }
+    bool useMockData() const { return m_useMockData; }
 
-    // متدهای قابل فراخوانی از QML
+    void setUseMockData(bool use);
+
     Q_INVOKABLE void startUpdates();
     Q_INVOKABLE void stopUpdates();
-    Q_INVOKABLE QVariantList getSatellites();
+    Q_INVOKABLE QVariantList getSatellites() const;
 
 signals:
     void positionChanged();
-    void satellitesUpdated();
+    void validityChanged();
     void statusMessageChanged();
-    void errorOccurred(const QString &error);
+    void satellitesUpdated();
+    void useMockDataChanged();
 
 private slots:
     void onPositionUpdated(const QGeoPositionInfo &info);
-    void onPositionError(QGeoPositionInfoSource::Error error);
+    void onUpdateTimeout();
+    void onError(QGeoPositionInfoSource::Error error);
     void onSatellitesInViewUpdated(const QList<QGeoSatelliteInfo> &satellites);
     void onSatellitesInUseUpdated(const QList<QGeoSatelliteInfo> &satellites);
-    void onSatelliteError(QGeoSatelliteInfoSource::Error error);
+    void updateMockData();
+    void updateMockSatellites();
 
 private:
-    // منابع Qt Positioning
     QGeoPositionInfoSource *m_positionSource;
     QGeoSatelliteInfoSource *m_satelliteSource;
+    QTimer *m_mockTimer;
+    QTimer *m_mockSatelliteTimer;
 
-    // داده‌های موقعیت
     double m_latitude;
     double m_longitude;
     double m_altitude;
@@ -90,16 +82,17 @@ private:
     QString m_timestamp;
     bool m_isValid;
     QString m_statusMessage;
-
-    // داده‌های ماهواره
     int m_satelliteCount;
     int m_satellitesInUse;
-    QList<QGeoSatelliteInfo> m_satellitesInView;
-    QList<QGeoSatelliteInfo> m_satellitesUsed;
+    bool m_useMockData;
 
-    // متدهای کمکی
-    void updateStatusMessage(const QString &message);
-    void resetData();
+    QList<QGeoSatelliteInfo> m_satellitesInView;
+    QList<QGeoSatelliteInfo> m_satellitesInUseList;
+    QVariantList m_mockSatellites;
+
+    void setStatusMessage(const QString &message);
+    void updateValidity(bool valid);
+    void generateMockSatellites();
 };
 
 #endif // GPSMANAGER_H
