@@ -20,63 +20,62 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 16
+        anchors.margins: 12
         spacing: 8
 
-        // ردیف بالا: آیکون + تایتل
-        RowLayout {
+        // ردیف بالا: آیکون + تایتل (وسط‌چین)
+        ColumnLayout {
             Layout.fillWidth: true
-            spacing: 8
-            layoutDirection: theme.isRTL ? Qt.RightToLeft : Qt.LeftToRight
+            Layout.alignment: Qt.AlignHCenter
+            spacing: 4
 
             Text {
                 text: root.icon
-                font.pixelSize: 18
+                font.pixelSize: 20
                 color: theme.text
-                Layout.alignment: Qt.AlignVCenter
+                Layout.alignment: Qt.AlignHCenter
             }
 
             Text {
                 text: root.title
-                font.pixelSize: 13
+                font.pixelSize: 12
                 color: theme.textSecondary
                 Layout.fillWidth: true
+                Layout.maximumWidth: root.width - 24
+                wrapMode: Text.WordWrap
+                horizontalAlignment: Text.AlignHCenter
+                maximumLineCount: 2
                 elide: Text.ElideRight
-                horizontalAlignment: theme.isRTL ? Text.AlignRight : Text.AlignLeft
-                Layout.alignment: Qt.AlignVCenter
             }
         }
 
         // فاصله انعطاف‌پذیر
         Item {
             Layout.fillHeight: true
-            Layout.minimumHeight: 10
+            Layout.minimumHeight: 8
         }
 
-        // ردیف پایین: مقدار + واحد
+        // ردیف پایین: مقدار + واحد (وسط‌چین)
         RowLayout {
             Layout.fillWidth: true
-            spacing: 6
-            layoutDirection: theme.isRTL ? Qt.RightToLeft : Qt.LeftToRight
+            Layout.alignment: Qt.AlignHCenter
+            spacing: 4
 
             Text {
                 text: root.value
-                font.pixelSize: 24
+                font.pixelSize: 22
                 font.bold: true
                 color: theme.text
                 Layout.alignment: Qt.AlignVCenter
+                horizontalAlignment: Text.AlignHCenter
             }
 
             Text {
                 text: root.unit
-                font.pixelSize: 13
+                font.pixelSize: 11
                 color: theme.textSecondary
                 Layout.alignment: Qt.AlignVCenter
-            }
-
-            // فضای خالی برای چپ‌چین/راست‌چین
-            Item {
-                Layout.fillWidth: true
+                wrapMode: Text.NoWrap
             }
         }
     }
