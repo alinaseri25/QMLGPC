@@ -7,6 +7,7 @@ Item {
     width: 60
     height: 150
 
+    required property var theme
     property int satelliteId: 0
     property real signalStrength: 0
     property int systemType: 0
@@ -27,10 +28,10 @@ Item {
 
     // تابع رنگ بر اساس قدرت سیگنال
     function getSignalColor(strength) {
-        if (strength >= 40) return Theme.successColor
-        if (strength >= 30) return Theme.accentColor
-        if (strength >= 20) return Theme.warningColor
-        return Theme.errorColor
+        if (strength >= 40) return theme.successColor
+        if (strength >= 30) return theme.accentColor
+        if (strength >= 20) return theme.warningColor
+        return theme.errorColor
     }
 
     Column {
@@ -72,7 +73,7 @@ Item {
             text: root.satelliteId.toString()
             font.pixelSize: 11
             font.bold: true
-            color: Theme.primaryTextColor
+            color: theme.primaryTextColor
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -81,7 +82,7 @@ Item {
             width: parent.width
             text: getSystemName(root.systemType)
             font.pixelSize: 9
-            color: Theme.secondaryTextColor
+            color: theme.secondaryTextColor
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -91,7 +92,7 @@ Item {
             width: 6
             height: 6
             radius: 3
-            color: Theme.successColor
+            color: theme.successColor
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }

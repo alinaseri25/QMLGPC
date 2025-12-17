@@ -8,10 +8,14 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     // ایجاد GpsManager
-    GpsManager *gpsManager =  new GpsManager;
+    GpsManager *gpsManager = new GpsManager;
 
     // ایجاد QML Engine
     QQmlApplicationEngine engine;
+
+    // 🆕 اضافه کردن مسیر Import برای Theme
+    engine.addImportPath("qrc:/qt/qml");
+    engine.addImportPath(":/qt/qml");
 
     // تزریق GpsManager به QML
     engine.rootContext()->setContextProperty("gpsManager", gpsManager);

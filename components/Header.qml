@@ -1,99 +1,80 @@
 import QtQuick
-import QtQuick.Controls.Basic
+import QtQuick.Controls
 import QtQuick.Layouts
-import QMLGPC
 
 Rectangle {
-    id: header
-    height: 60
-    color: Theme.surface
+    id: root
+    required property var theme
 
     signal menuClicked()
     signal settingsClicked()
 
-    // RTL Support
-    LayoutMirroring.enabled: Theme.isRTL
-    LayoutMirroring.childrenInherit: true
+    width: parent.width
+    height: theme.headerHeight
+    color: theme.surface
+
+    border.color: theme.border
+    border.width: 1
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: Theme.spacing
-        spacing: Theme.spacing
+        anchors.margins: theme.spacing
+        spacing: theme.spacing
 
-        // Menu Button
+        // دکمه منو
         Button {
+            Layout.preferredWidth: 40
+            Layout.preferredHeight: 40
             text: "☰"
-            font.pixelSize: 24
             flat: true
 
             background: Rectangle {
-                color: parent.hovered ? Theme.hoverColor : "transparent"
-                radius: Theme.radius
+                color: parent.hovered ? theme.hoverColor : "transparent"
+                radius: theme.radius
             }
 
             contentItem: Text {
                 text: parent.text
-                color: Theme.text
+                color: theme.text
+                font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                font: parent.font
             }
 
-            onClicked: header.menuClicked()
+            onClicked: root.menuClicked()
         }
 
-        // Title
+        // عنوان
         Text {
-            text: "QMLGPC"
-            font.pixelSize: 20
-            font.bold: true
-            color: Theme.text
             Layout.fillWidth: true
-            horizontalAlignment: Theme.textAlignment()
+            text: theme.isRTL ? "مدیریت GPS" : "GPS Manager"
+            font.pixelSize: theme.fontSizeLarge
+            font.bold: true
+            color: theme.text
+            horizontalAlignment: theme.textAlignment()
         }
 
-        // Theme Toggle Button
+        // دکمه تنظیمات
         Button {
-            text: Theme.isDarkMode ? "☀" : "🌙"
-            font.pixelSize: 20
+            Layout.preferredWidth: 40
+            Layout.preferredHeight: 40
+            text: "⚙️"
             flat: true
 
             background: Rectangle {
-                color: parent.hovered ? Theme.hoverColor : "transparent"
-                radius: Theme.radius
+                color: parent.hovered ? theme.hoverColor : "transparent"
+                radius: theme.radius
             }
 
             contentItem: Text {
                 text: parent.text
-                color: Theme.text
+                color: theme.text
+                font.pixelSize: 20
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                font: parent.font
             }
 
-            onClicked: Theme.isDarkMode = !Theme.isDarkMode
-        }
-
-        // Settings Button
-        Button {
-            text: "⚙"
-            font.pixelSize: 20
-            flat: true
-
-            background: Rectangle {
-                color: parent.hovered ? Theme.hoverColor : "transparent"
-                radius: Theme.radius
-            }
-
-            contentItem: Text {
-                text: parent.text
-                color: Theme.text
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
-                font: parent.font
-            }
-
-            onClicked: header.settingsClicked()
+            onClicked: root.settingsClicked()
         }
     }
 }

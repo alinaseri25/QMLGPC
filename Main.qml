@@ -1,255 +1,407 @@
 import QtQuick
-import QtQuick.Controls.Basic
-import QMLGPC
+import QtQuick.Window
+import QtQuick.Controls
+import QtQuick.Layouts
+import "components"
+import "panels"
+import "theme"
 
 ApplicationWindow {
-    id: root
-    width: 800
-    height: 600
+    id: window
     visible: true
-    title: qsTr("QMLGPC")
+    width: 400
+    height: 800
+    title: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
 
-    color: Theme.background
+    Theme {
+        id: appTheme
+    }
 
-    // RTL Support
-    LayoutMirroring.enabled: Theme.isRTL
+    // فعال‌سازی RTL برای کل برنامه
+    LayoutMirroring.enabled: appTheme.isRTL
     LayoutMirroring.childrenInherit: true
 
-    Header {
-        id: header
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: parent.top
-        z: 10  // بالاتر از ScrollView
-
-        onMenuClicked: {
-            menuDrawer.open()
-        }
-
-        onSettingsClicked: {
-            settingsDialog.open()
-        }
+    background: Rectangle {
+        color: appTheme.background
     }
 
-    // Main Content با ScrollView
+    header: Header {
+        theme: appTheme
+        onMenuClicked: menuDrawer.open()
+        onSettingsClicked: settingsDialog.open()
+    }
+
+    // محتوای اصلی
     ScrollView {
-        id: scrollView
-        anchors.left: parent.left
-        anchors.right: parent.right
-        anchors.top: header.bottom
-        anchors.bottom: parent.bottom
+        anchors.fill: parent
         clip: true
 
-        ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
-        ScrollBar.vertical.policy: ScrollBar.AsNeeded
-
         GpsPanel {
-            width: scrollView.width
+            theme: appTheme
+            width: parent.width
         }
     }
 
-    // Menu Drawer
+    // منوی کشویی
     Drawer {
         id: menuDrawer
-        width: 250
-        height: root.height
-        edge: Theme.drawerEdge()
+        width: Math.min(window.width * 0.7, 300)
+        height: window.height
+        edge: appTheme.drawerEdge()
 
         background: Rectangle {
-            color: Theme.surface
-            border.color: Theme.border
+            color: appTheme.surface
+            border.color: appTheme.border
             border.width: 1
         }
 
-        contentItem: Item {
+        Column {
             anchors.fill: parent
-            LayoutMirroring.enabled: Theme.isRTL
-            LayoutMirroring.childrenInherit: true
+            spacing: 0
 
-            Column {
-                anchors.fill: parent
-                anchors.margins: Theme.spacing
-                spacing: Theme.spacing
+            // هدر منو
+            Rectangle {
+                width: parent.width
+                height: 120
+                color: appTheme.primary
 
-                Text {
-                    width: parent.width
-                    text: Theme.isRTL ? "منو" : "Menu"
-                    font.pixelSize: 20
-                    font.bold: true
-                    color: Theme.text
-                    horizontalAlignment: Theme.textAlignment()
-                }
+                Column {
+                    anchors.centerIn: parent
+                    spacing: 8
 
-                Rectangle {
-                    width: parent.width
-                    height: 1
-                    color: Theme.border
-                }
-
-                Button {
-                    width: parent.width
-                    text: Theme.isRTL ? "📍 داده‌های GPS" : "📍 GPS Data"
-                    flat: true
-
-                    background: Rectangle {
-                        color: parent.hovered ? Theme.hoverColor : "transparent"
-                        radius: Theme.radius
+                    Text {
+                        text: "🛰️"
+                        font.pixelSize: 48
+                        anchors.horizontalCenter: parent.horizontalCenter
                     }
 
-                    contentItem: Text {
-                        text: parent.text
-                        color: Theme.text
-                        horizontalAlignment: Theme.textAlignment()
-                        verticalAlignment: Text.AlignVCenter
-                        font.pixelSize: 16
-                        leftPadding: Theme.isRTL ? 0 : Theme.spacing
-                        rightPadding: Theme.isRTL ? Theme.spacing : 0
-                    }
-
-                    onClicked: {
-                        console.log("GPS Data clicked")
-                        menuDrawer.close()
+                    Text {
+                        text: appTheme.isRTL ? "مدیریت GPS" : "GPS Manager"
+                        font.pixelSize: 20
+                        font.bold: true
+                        color: "white"
+                        anchors.horizontalCenter: parent.horizontalCenter
                     }
                 }
+            }
 
-                Button {
-                    width: parent.width
-                    text: Theme.isRTL ? "⚙ تنظیمات" : "⚙ Settings"
-                    flat: true
+            Rectangle {
+                width: parent.width
+                height: 1
+                color: appTheme.border
+            }
 
-                    background: Rectangle {
-                        color: parent.hovered ? Theme.hoverColor : "transparent"
-                        radius: Theme.radius
-                    }
+            // دکمه داده‌های GPS
+            Button {
+                width: parent.width
+                text: appTheme.isRTL ? "📍 داده‌های GPS" : "📍 GPS Data"
+                flat: true
+                height: 50
 
-                    contentItem: Text {
-                        text: parent.text
-                        color: Theme.text
-                        horizontalAlignment: Theme.textAlignment()
-                        verticalAlignment: Text.AlignVCenter
-                        font.pixelSize: 16
-                        leftPadding: Theme.isRTL ? 0 : Theme.spacing
-                        rightPadding: Theme.isRTL ? Theme.spacing : 0
-                    }
-
-                    onClicked: {
-                        settingsDialog.open()
-                        menuDrawer.close()
-                    }
+                background: Rectangle {
+                    color: parent.hovered ? appTheme.hoverColor : "transparent"
+                    radius: 0
                 }
 
-                Button {
-                    width: parent.width
-                    text: Theme.isRTL ? "ℹ درباره" : "ℹ About"
-                    flat: true
+                contentItem: Text {
+                    text: parent.text
+                    color: appTheme.text
+                    horizontalAlignment: appTheme.textAlignment()
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 16
+                    leftPadding: appTheme.isRTL ? 0 : appTheme.spacing
+                    rightPadding: appTheme.isRTL ? appTheme.spacing : 0
+                }
 
-                    background: Rectangle {
-                        color: parent.hovered ? Theme.hoverColor : "transparent"
-                        radius: Theme.radius
-                    }
+                onClicked: {
+                    console.log("GPS Data clicked")
+                    menuDrawer.close()
+                }
+            }
 
-                    contentItem: Text {
-                        text: parent.text
-                        color: Theme.text
-                        horizontalAlignment: Theme.textAlignment()
-                        verticalAlignment: Text.AlignVCenter
-                        font.pixelSize: 16
-                        leftPadding: Theme.isRTL ? 0 : Theme.spacing
-                        rightPadding: Theme.isRTL ? Theme.spacing : 0
-                    }
+            // دکمه تنظیمات
+            Button {
+                width: parent.width
+                text: appTheme.isRTL ? "⚙️ تنظیمات" : "⚙️ Settings"
+                flat: true
+                height: 50
 
-                    onClicked: {
-                        console.log("About clicked")
-                        menuDrawer.close()
-                    }
+                background: Rectangle {
+                    color: parent.hovered ? appTheme.hoverColor : "transparent"
+                    radius: 0
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: appTheme.text
+                    horizontalAlignment: appTheme.textAlignment()
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 16
+                    leftPadding: appTheme.isRTL ? 0 : appTheme.spacing
+                    rightPadding: appTheme.isRTL ? appTheme.spacing : 0
+                }
+
+                onClicked: {
+                    settingsDialog.open()
+                    menuDrawer.close()
+                }
+            }
+
+            // دکمه درباره
+            Button {
+                width: parent.width
+                text: appTheme.isRTL ? "ℹ️ درباره" : "ℹ️ About"
+                flat: true
+                height: 50
+
+                background: Rectangle {
+                    color: parent.hovered ? appTheme.hoverColor : "transparent"
+                    radius: 0
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: appTheme.text
+                    horizontalAlignment: appTheme.textAlignment()
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 16
+                    leftPadding: appTheme.isRTL ? 0 : appTheme.spacing
+                    rightPadding: appTheme.isRTL ? appTheme.spacing : 0
+                }
+
+                onClicked: {
+                    aboutDialog.open()
+                    menuDrawer.close()
                 }
             }
         }
     }
 
-    // Settings Dialog
+    // دیالوگ تنظیمات
     Dialog {
         id: settingsDialog
-        title: Theme.isRTL ? "تنظیمات" : "Settings"
+        title: appTheme.isRTL ? "تنظیمات" : "Settings"
         anchors.centerIn: parent
-        width: 400
-        height: 300
+        width: Math.min(window.width * 0.9, 400)
+        height: Math.min(window.height * 0.6, 350)
         modal: true
 
         background: Rectangle {
-            color: Theme.surface
-            border.color: Theme.border
+            color: appTheme.surface
+            border.color: appTheme.border
             border.width: 1
-            radius: Theme.radius
+            radius: appTheme.radius
         }
 
-        header: Item {
+        header: Rectangle {
             width: parent.width
-            height: 50
-            LayoutMirroring.enabled: Theme.isRTL
-            LayoutMirroring.childrenInherit: true
+            height: 60
+            color: appTheme.primary
+            radius: appTheme.radius
 
-            Rectangle {
-                anchors.fill: parent
-                color: Theme.surface
-
-                Text {
-                    anchors.centerIn: parent
-                    text: Theme.isRTL ? "تنظیمات" : "Settings"
-                    font.pixelSize: 18
-                    font.bold: true
-                    color: Theme.text
-                }
+            Text {
+                anchors.centerIn: parent
+                text: appTheme.isRTL ? "⚙️ تنظیمات" : "⚙️ Settings"
+                font.pixelSize: 20
+                font.bold: true
+                color: "white"
             }
         }
 
-        contentItem: Item {
+        ColumnLayout {
             anchors.fill: parent
-            LayoutMirroring.enabled: Theme.isRTL
-            LayoutMirroring.childrenInherit: true
+            anchors.margins: appTheme.spacingLarge
+            spacing: appTheme.spacingLarge
 
-            Column {
-                anchors.fill: parent
-                spacing: Theme.spacingLarge
-                padding: Theme.spacing
+            // حالت تاریک/روشن
+            Rectangle {
+                Layout.fillWidth: true
+                height: 70
+                color: appTheme.hoverColor
+                radius: appTheme.radius
+                border.color: appTheme.border
+                border.width: 1
 
-                Row {
-                    spacing: Theme.spacing
-                    width: parent.width - Theme.spacing * 2
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: appTheme.spacing
+                    spacing: appTheme.spacing
 
-                    Text {
-                        text: Theme.isRTL ? "حالت شب:" : "Dark Mode:"
-                        color: Theme.text
-                        font.pixelSize: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 150
-                        horizontalAlignment: Theme.textAlignment()
+                    Column {
+                        Layout.fillWidth: true
+                        spacing: 4
+
+                        Text {
+                            text: appTheme.isRTL ? "🌓 حالت شب/روز" : "🌓 Dark/Light Mode"
+                            color: appTheme.text
+                            font.pixelSize: 16
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: appTheme.isRTL
+                                ? (appTheme.isDarkMode ? "حالت تاریک فعال" : "حالت روشن فعال")
+                                : (appTheme.isDarkMode ? "Dark mode enabled" : "Light mode enabled")
+                            color: appTheme.textSecondary
+                            font.pixelSize: 12
+                        }
                     }
 
                     Switch {
-                        checked: Theme.isDarkMode
-                        onToggled: Theme.isDarkMode = checked
+                        checked: appTheme.isDarkMode
+                        onToggled: appTheme.isDarkMode = checked
                     }
                 }
+            }
 
-                Row {
-                    spacing: Theme.spacing
-                    width: parent.width - Theme.spacing * 2
+            // جهت زبان RTL/LTR
+            Rectangle {
+                Layout.fillWidth: true
+                height: 70
+                color: appTheme.hoverColor
+                radius: appTheme.radius
+                border.color: appTheme.border
+                border.width: 1
 
-                    Text {
-                        text: Theme.isRTL ? "زبان راست به چپ:" : "RTL Language:"
-                        color: Theme.text
-                        font.pixelSize: 16
-                        anchors.verticalCenter: parent.verticalCenter
-                        width: 150
-                        horizontalAlignment: Theme.textAlignment()
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.margins: appTheme.spacing
+                    spacing: appTheme.spacing
+
+                    Column {
+                        Layout.fillWidth: true
+                        spacing: 4
+
+                        Text {
+                            text: appTheme.isRTL ? "🔄 جهت زبان" : "🔄 Language Direction"
+                            color: appTheme.text
+                            font.pixelSize: 16
+                            font.bold: true
+                        }
+
+                        Text {
+                            text: appTheme.isRTL
+                                ? (appTheme.isRTL ? "راست به چپ (فارسی)" : "چپ به راست (انگلیسی)")
+                                : (appTheme.isRTL ? "Right-to-Left (Persian)" : "Left-to-Right (English)")
+                            color: appTheme.textSecondary
+                            font.pixelSize: 12
+                        }
                     }
 
                     Switch {
-                        checked: Theme.isRTL
-                        onToggled: Theme.isRTL = checked
+                        checked: appTheme.isRTL
+                        onToggled: appTheme.isRTL = checked
                     }
                 }
+            }
+
+            Item {
+                Layout.fillHeight: true
+            }
+
+            // دکمه بستن
+            Button {
+                Layout.fillWidth: true
+                Layout.preferredHeight: 50
+                text: appTheme.isRTL ? "✓ تایید" : "✓ OK"
+
+                background: Rectangle {
+                    color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
+                    radius: appTheme.radius
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: "white"
+                    font.pixelSize: 16
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                onClicked: settingsDialog.close()
+            }
+        }
+    }
+
+    // دیالوگ درباره
+    Dialog {
+        id: aboutDialog
+        title: appTheme.isRTL ? "درباره" : "About"
+        anchors.centerIn: parent
+        width: Math.min(window.width * 0.9, 350)
+        modal: true
+
+        background: Rectangle {
+            color: appTheme.surface
+            border.color: appTheme.border
+            border.width: 1
+            radius: appTheme.radius
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            spacing: appTheme.spacingMedium
+
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                text: "🛰️"
+                font.pixelSize: 64
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
+                font.pixelSize: 20
+                font.bold: true
+                color: appTheme.text
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: "Version 1.0.0"
+                font.pixelSize: 14
+                color: appTheme.textSecondary
+                horizontalAlignment: Text.AlignHCenter
+            }
+
+            Rectangle {
+                Layout.fillWidth: true
+                height: 1
+                color: appTheme.border
+            }
+
+            Text {
+                Layout.fillWidth: true
+                text: appTheme.isRTL
+                    ? "یک برنامه قدرتمند برای مدیریت و نمایش داده‌های GPS"
+                    : "A powerful application for GPS data management and visualization"
+                font.pixelSize: 14
+                color: appTheme.textSecondary
+                horizontalAlignment: Text.AlignHCenter
+                wrapMode: Text.WordWrap
+            }
+
+            Button {
+                Layout.fillWidth: true
+                Layout.topMargin: appTheme.spacing
+                text: appTheme.isRTL ? "بستن" : "Close"
+
+                background: Rectangle {
+                    color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
+                    radius: appTheme.radius
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: "white"
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
+                onClicked: aboutDialog.close()
             }
         }
     }

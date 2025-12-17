@@ -6,6 +6,7 @@ import QMLGPC
 Rectangle {
     id: root
 
+    required property var theme
     required property string icon
     required property string title
     required property string value
@@ -14,8 +15,8 @@ Rectangle {
     implicitWidth: 140
     implicitHeight: 100
     radius: 12
-    color: Theme.cardBackground
-    border.color: Theme.cardBorder
+    color: theme.cardBackground
+    border.color: theme.cardBorder
     border.width: 1
 
     ColumnLayout {
@@ -27,7 +28,7 @@ Rectangle {
         Text {
             text: root.icon
             font.pixelSize: 24
-            color: Theme.primary
+            color: theme.primary
             Layout.alignment: Qt.AlignHCenter
         }
 
@@ -35,7 +36,7 @@ Rectangle {
         Text {
             text: root.title
             font.pixelSize: 11
-            color: Theme.textSecondary
+            color: theme.textSecondary
             Layout.alignment: Qt.AlignHCenter
             elide: Text.ElideRight
             Layout.fillWidth: true
@@ -51,13 +52,13 @@ Rectangle {
                 text: root.value
                 font.pixelSize: 18
                 font.bold: true
-                color: Theme.textPrimary
+                color: theme.textPrimary
             }
 
             Text {
                 text: root.unit
                 font.pixelSize: 11
-                color: Theme.textSecondary
+                color: theme.textSecondary
                 visible: root.unit !== ""
             }
         }

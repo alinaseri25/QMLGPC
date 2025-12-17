@@ -2,27 +2,32 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import QMLGPC
+import "../components"
 
 Rectangle {
     id: root
-    color: Theme.surfaceColor
-    radius: 12
-    border.color: Theme.borderColor
+    required property var theme
+
+    color: theme.surface
+    radius: theme.radius
+    border.color: theme.border
     border.width: 1
 
     property var satellites: []
 
     Column {
         anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
+        anchors.margins: theme.cardPadding
+        spacing: theme.spacingMedium
 
         // هدر
         Text {
+            width: parent.width  // ✨ حذف anchors.centerIn
             text: "ماهواره‌های دریافتی"
-            font.pixelSize: 16
+            font.pixelSize: theme.fontSizeLarge
             font.bold: true
-            color: Theme.primaryTextColor
+            color: theme.text
+            horizontalAlignment: Text.AlignHCenter
         }
 
         // نمودار میله‌ای
@@ -33,12 +38,13 @@ Rectangle {
 
             Flow {
                 width: parent.width
-                spacing: 8
+                spacing: theme.spacingSmall
 
                 Repeater {
                     model: root.satellites
 
                     SatelliteBar {
+                        theme: root.theme
                         satelliteId: modelData.id || 0
                         signalStrength: modelData.signalStrength || 0
                         systemType: modelData.system || 0
@@ -50,11 +56,12 @@ Rectangle {
 
         // پیام خالی
         Text {
+            width: parent.width  // ✨ به جای anchors.horizontalCenter
             visible: root.satellites.length === 0
-            anchors.centerIn: parent
             text: "در انتظار دریافت اطلاعات ماهواره..."
-            font.pixelSize: 14
-            color: Theme.secondaryTextColor
+            font.pixelSize: theme.fontSizeMedium
+            color: theme.textSecondary
+            horizontalAlignment: Text.AlignHCenter
         }
     }
 }

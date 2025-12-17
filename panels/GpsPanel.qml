@@ -5,6 +5,8 @@ import QMLGPC
 import "../components"
 
 Item {
+    required property var theme
+
     id: root
     implicitHeight: mainColumn.height
 
@@ -24,15 +26,15 @@ Item {
                 Layout.fillWidth: true
 
                 background: Rectangle {
-                    color: parent.pressed ? Theme.primary : (parent.hovered ? Qt.lighter(Theme.surface, 1.1) : Theme.surface)
-                    radius: Theme.radius
-                    border.color: Theme.border
+                    color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
+                    radius: theme.radius
+                    border.color: theme.border
                     border.width: 1
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: Theme.text
+                    color: theme.text
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
@@ -53,16 +55,16 @@ Item {
                 enabled: gpsManager.isValid
 
                 background: Rectangle {
-                    color: parent.pressed ? Theme.primary : (parent.hovered ? Qt.lighter(Theme.surface, 1.1) : Theme.surface)
+                    color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
                     opacity: parent.enabled ? 1.0 : 0.5
-                    radius: Theme.radius
-                    border.color: Theme.border
+                    radius: theme.radius
+                    border.color: theme.border
                     border.width: 1
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: Theme.text
+                    color: theme.text
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
@@ -77,8 +79,8 @@ Item {
             Layout.fillWidth: true
             Layout.margins: 16
             height: 50
-            color: gpsManager.isValid ? Theme.accentGreen : Theme.accentOrange
-            radius: Theme.radius
+            color: gpsManager.isValid ? theme.accentGreen : theme.accentOrange
+            radius: theme.radius
 
             Text {
                 anchors.centerIn: parent
@@ -98,6 +100,7 @@ Item {
             columnSpacing: 12
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "عرض جغرافیایی"
                 value: gpsManager.isValid ? gpsManager.latitude.toFixed(6) : "---"
@@ -106,6 +109,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "طول جغرافیایی"
                 value: gpsManager.isValid ? gpsManager.longitude.toFixed(6) : "---"
@@ -114,6 +118,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "ارتفاع"
                 value: gpsManager.isValid ? gpsManager.altitude.toFixed(1) : "---"
@@ -122,6 +127,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "سرعت"
                 value: gpsManager.isValid ? (gpsManager.speed * 3.6).toFixed(1) : "---"
@@ -130,6 +136,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "جهت"
                 value: gpsManager.isValid ? gpsManager.direction.toFixed(0) : "---"
@@ -138,6 +145,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "دقت افقی"
                 value: gpsManager.isValid ? gpsManager.horizontalAccuracy.toFixed(1) : "---"
@@ -146,6 +154,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "دقت عمودی"
                 value: gpsManager.isValid ? gpsManager.verticalAccuracy.toFixed(1) : "---"
@@ -154,6 +163,7 @@ Item {
             }
 
             GpsDataCard {
+                theme: root.theme
                 Layout.fillWidth: true
                 title: "زمان"
                 value: gpsManager.isValid ? gpsManager.timestamp : "---"
@@ -167,9 +177,9 @@ Item {
             Layout.fillWidth: true
             Layout.margins: 16
             height: 80
-            color: Theme.surface
-            radius: Theme.radius
-            border.color: Theme.border
+            color: theme.surface
+            radius: theme.radius
+            border.color: theme.border
             border.width: 1
 
             RowLayout {
@@ -185,7 +195,7 @@ Item {
                         width: parent.width
                         text: "کل ماهواره‌ها"
                         font.pixelSize: 12
-                        color: Theme.textSecondary
+                        color: theme.textSecondary
                         horizontalAlignment: Text.AlignHCenter
                     }
 
@@ -194,7 +204,7 @@ Item {
                         text: gpsManager.satelliteCount.toString()
                         font.pixelSize: 28
                         font.bold: true
-                        color: Theme.text
+                        color: theme.text
                         horizontalAlignment: Text.AlignHCenter
                     }
                 }
@@ -202,7 +212,7 @@ Item {
                 Rectangle {
                     width: 1
                     Layout.fillHeight: true
-                    color: Theme.border
+                    color: theme.border
                 }
 
                 Column {
@@ -213,7 +223,7 @@ Item {
                         width: parent.width
                         text: "در حال استفاده"
                         font.pixelSize: 12
-                        color: Theme.textSecondary
+                        color: theme.textSecondary
                         horizontalAlignment: Text.AlignHCenter
                     }
 
@@ -222,7 +232,7 @@ Item {
                         text: gpsManager.satellitesInUse.toString()
                         font.pixelSize: 28
                         font.bold: true
-                        color: Theme.primary
+                        color: theme.primary
                         horizontalAlignment: Text.AlignHCenter
                     }
                 }
@@ -231,6 +241,7 @@ Item {
 
         // نمودار ماهواره‌ها
         SatelliteView {
+            theme: root.theme
             id: satelliteView
             Layout.fillWidth: true
             Layout.preferredHeight: 400
