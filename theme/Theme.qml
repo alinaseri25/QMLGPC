@@ -10,23 +10,31 @@ QtObject {
     // =============== رنگ‌های پویا (Dark/Light) ===============
     readonly property color background: isDarkMode ? "#0A0E27" : "#F5F7FA"
     readonly property color surface: isDarkMode ? "#1A1F3A" : "#FFFFFF"
+    readonly property color cardBackground: isDarkMode ? "#1A1F3A" : "#FFFFFF"
+    readonly property color headerBackground: isDarkMode ? "#1A1F3A" : "#FFFFFF"
+
     readonly property color primary: isDarkMode ? "#4A90E2" : "#2196F3"
     readonly property color border: isDarkMode ? "#2A3F5F" : "#E0E0E0"
+    readonly property color cardBorder: isDarkMode ? "#2A3F5F" : "#E0E0E0"
 
     // رنگ‌های متن
     readonly property color text: isDarkMode ? "#FFFFFF" : "#1A1A1A"
+    readonly property color textPrimary: isDarkMode ? "#FFFFFF" : "#1A1A1A"
     readonly property color textSecondary: isDarkMode ? "#8A9AB8" : "#666666"
 
-    // رنگ‌های تاکیدی (ثابت در هر دو حالت)
+    // رنگ‌های تاکیدی
     readonly property color accentGreen: "#4CAF50"
     readonly property color accentOrange: "#FF9800"
     readonly property color accentRed: "#F44336"
+    readonly property color accentBlue: isDarkMode ? "#4A90E2" : "#2196F3"
 
     // رنگ هاور
     readonly property color hoverColor: isDarkMode ? "#252B47" : "#F0F0F0"
 
     // =============== اندازه‌ها ===============
     readonly property int radius: 12
+    readonly property int cardRadius: 12
+    readonly property int borderRadius: 12
     readonly property int cardPadding: 16
     readonly property int headerHeight: 60
 

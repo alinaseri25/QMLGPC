@@ -26,12 +26,12 @@ Item {
         }
     }
 
-    // تابع رنگ بر اساس قدرت سیگنال
+    // ✅ استفاده از رنگ‌های موجود در theme
     function getSignalColor(strength) {
-        if (strength >= 40) return theme.successColor
-        if (strength >= 30) return theme.accentColor
-        if (strength >= 20) return theme.warningColor
-        return theme.errorColor
+        if (strength >= 40) return theme.accentGreen
+        if (strength >= 30) return theme.primary
+        if (strength >= 20) return theme.accentOrange
+        return theme.accentRed
     }
 
     Column {
@@ -73,7 +73,7 @@ Item {
             text: root.satelliteId.toString()
             font.pixelSize: 11
             font.bold: true
-            color: theme.primaryTextColor
+            color: theme.text  // ✅ تصحیح: primaryTextColor → text
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -82,7 +82,7 @@ Item {
             width: parent.width
             text: getSystemName(root.systemType)
             font.pixelSize: 9
-            color: theme.secondaryTextColor
+            color: theme.textSecondary  // ✅ تصحیح: secondaryTextColor → textSecondary
             horizontalAlignment: Text.AlignHCenter
         }
 
@@ -92,7 +92,7 @@ Item {
             width: 6
             height: 6
             radius: 3
-            color: theme.successColor
+            color: theme.accentGreen  // ✅ تصحیح: successColor → accentGreen
             anchors.horizontalCenter: parent.horizontalCenter
         }
     }

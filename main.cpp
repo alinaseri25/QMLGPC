@@ -3,28 +3,56 @@
 #include <QQmlContext>
 #include "backend/GpsManager.h"
 
+#ifdef Q_OS_ANDROID
+#include <QtCore/private/qandroidextras_p.h>
+#include <QPermission>
+
+void requestLocationPermissions() {
+    QLocationPermission permission;
+    permission.setAccuracy(QLocationPermission::Precise);
+
+    switch (qApp->checkPermission(permission)) {
+    case Qt::PermissionStatus::Undetermined:
+        qApp->requestPermission(permission, [](const QPermission &permission) {
+            if (qApp->checkPermission(permission) == Qt::PermissionStatus::Granted) {
+                qDebug() << "Location permission granted!";
+            } else {
+                qDebug() << "Location permission denied!";
+            }
+        });
+        break;
+    case Qt::PermissionStatus::Denied:
+        qDebug() << "Location permission denied!";
+        break;
+    case Qt::PermissionStatus::Granted:
+        qDebug() << "Location permission already granted!";
+        break;
+    }
+}
+#endif
+
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    // ایجاد GpsManager
-    GpsManager *gpsManager = new GpsManager;
+#ifdef Q_OS_ANDROID
+    requestLocationPermissions();
+#endif
 
-    // ایجاد QML Engine
+    GpsManager gpsManager;
+
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("gpsManager", &gpsManager);
 
-    // 🆕 اضافه کردن مسیر Import برای Theme
-    engine.addImportPath("qrc:/qt/qml");
-    engine.addImportPath(":/qt/qml");
-
-    // تزریق GpsManager به QML
-    engine.rootContext()->setContextProperty("gpsManager", gpsManager);
-
-    // لود از Module
-    engine.loadFromModule("QMLGPC", "Main");
-
-    if (engine.rootObjects().isEmpty())
-        return -1;
+    const QUrl url(QStringLiteral("qrc:/qt/qml/QMLGPC/Main.qml"));
+    QObject::connect(
+        &engine,
+        &QQmlApplicationEngine::objectCreationFailed,
+        &app,
+        []() { QCoreApplication::exit(-1); },
+        Qt::QueuedConnection
+        );
+    engine.load(url);
 
     return app.exec();
 }

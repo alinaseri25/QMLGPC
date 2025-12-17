@@ -1,65 +1,62 @@
 import QtQuick
-import QtQuick.Controls.Basic
 import QtQuick.Layouts
-import QMLGPC
 
 Rectangle {
     id: root
-
     required property var theme
-    required property string icon
-    required property string title
-    required property string value
-    property string unit: ""
 
-    implicitWidth: 140
+    property string title: ""
+    property string value: "---"
+    property string unit: ""
+    property string icon: "📍"
+
     implicitHeight: 100
-    radius: 12
+    implicitWidth: 150
+
     color: theme.cardBackground
+    radius: theme.cardRadius
     border.color: theme.cardBorder
     border.width: 1
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
-        spacing: 8
+        anchors.margins: theme.cardPadding
+        spacing: theme.spacingSmall
 
-        // Icon
+        // آیکون
         Text {
+            Layout.alignment: Qt.AlignHCenter
             text: root.icon
-            font.pixelSize: 24
-            color: theme.primary
-            Layout.alignment: Qt.AlignHCenter
+            font.pixelSize: 32
         }
 
-        // Title
+        // عنوان
         Text {
-            text: root.title
-            font.pixelSize: 11
-            color: theme.textSecondary
-            Layout.alignment: Qt.AlignHCenter
-            elide: Text.ElideRight
             Layout.fillWidth: true
+            text: root.title
+            font.pixelSize: theme.fontSizeSmall
+            color: theme.textSecondary
             horizontalAlignment: Text.AlignHCenter
+            wrapMode: Text.WordWrap
         }
 
-        // Value
+        // مقدار + واحد
         RowLayout {
-            spacing: 2
+            Layout.fillWidth: true
             Layout.alignment: Qt.AlignHCenter
+            spacing: 4
 
             Text {
                 text: root.value
-                font.pixelSize: 18
+                font.pixelSize: theme.fontSizeLarge
                 font.bold: true
                 color: theme.textPrimary
             }
 
             Text {
                 text: root.unit
-                font.pixelSize: 11
+                font.pixelSize: theme.fontSizeMedium
                 color: theme.textSecondary
-                visible: root.unit !== ""
             }
         }
     }
