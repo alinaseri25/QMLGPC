@@ -9,6 +9,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS
     Core
     Quick
     Positioning
+    Sensors
 )
 
 qt_standard_project_setup(REQUIRES 6.5)
@@ -68,6 +69,7 @@ target_link_libraries(QMLGPC PRIVATE
     Qt6::Core
     Qt6::Quick
     Qt6::Positioning
+    Qt6::Sensors
 )
 
 # =====================================================
@@ -104,10 +106,6 @@ if(ANDROID)
     set_property(TARGET QMLGPC APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
         ${ANDROID_PACKAGE_SOURCE_DIR}
     )
-
-    if(NOT ANDROID_ABI)
-        set(ANDROID_ABI "arm64-v8a")
-    endif()
 
     message(STATUS "Building for Android ABI: ${ANDROID_ABI}")
 

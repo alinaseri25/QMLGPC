@@ -10,6 +10,8 @@ Item {
     id: root
     implicitHeight: mainColumn.height
 
+    signal copyGeoData()
+
     ColumnLayout {
         id: mainColumn
         width: parent.width
@@ -46,6 +48,30 @@ Item {
                     } else {
                         gpsManager.startUpdates()
                     }
+                }
+            }
+
+            Button {
+                text: "کپی کردن مختصات"
+                Layout.fillWidth: true
+
+                background: Rectangle {
+                    color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
+                    radius: theme.radius
+                    border.color: theme.border
+                    border.width: 1
+                }
+
+                contentItem: Text {
+                    text: parent.text
+                    color: theme.text
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    font.pixelSize: 14
+                }
+
+                onClicked: {
+                    copyGeoData()
                 }
             }
 
@@ -248,5 +274,8 @@ Item {
             Layout.margins: 16
             Layout.bottomMargin: 32
         }
+    }
+    Component.onCompleted: {
+        copyGeoData.connect(gpsManager.onCopyGeoData)
     }
 }

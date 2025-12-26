@@ -8,6 +8,14 @@
 #include <QGeoSatelliteInfo>
 #include <QTimer>
 #include <QVariantList>
+#include <QDebug>
+#include <QDateTime>
+#include <QtMath>
+#include <QRandomGenerator>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QCompass>
+#include <QSensor>
 
 class GpsManager : public QObject
 {
@@ -65,6 +73,10 @@ private slots:
     void onSatellitesInUseUpdated(const QList<QGeoSatelliteInfo> &satellites);
     void updateMockData();
     void updateMockSatellites();
+    void onReadingChanged(void);
+
+public slots:
+    void onCopyGeoData(void);
 
 private:
     QGeoPositionInfoSource *m_positionSource;
@@ -85,6 +97,8 @@ private:
     int m_satelliteCount;
     int m_satellitesInUse;
     bool m_useMockData;
+    QCompass *compass;
+    bool hasCompass;
 
     QList<QGeoSatelliteInfo> m_satellitesInView;
     QList<QGeoSatelliteInfo> m_satellitesInUseList;

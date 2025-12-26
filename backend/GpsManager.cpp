@@ -1,8 +1,4 @@
 #include "GpsManager.h"
-#include <QDebug>
-#include <QDateTime>
-#include <QtMath>
-#include <QRandomGenerator>
 
 GpsManager::GpsManager(QObject *parent)
     : QObject(parent)
@@ -29,6 +25,19 @@ GpsManager::GpsManager(QObject *parent)
 
     // Mock Timer برای Satellites
     connect(m_mockSatelliteTimer, &QTimer::timeout, this, &GpsManager::updateMockSatellites);
+    compass = new QCompass(this);
+    hasCompass = !QSensor::sensorsForType(QCompass::sensorType).isEmpty();//compass->connectToBackend();
+    if(hasCompass)
+    {
+        connect(compass,&QCompass::readingChanged,this,&GpsManager::onReadingChanged);
+        compass->start();
+        qDebug() << "read Direction From Compass Sensor";
+    }
+    else
+    {
+        setStatusMessage(QString("دستگاه شما فاقد سنسور قطب نماست"));
+        qDebug() << "read Direction From GPS Sensor";
+    }
 }
 
 GpsManager::~GpsManager()
@@ -119,7 +128,14 @@ void GpsManager::onPositionUpdated(const QGeoPositionInfo &info)
         m_longitude = info.coordinate().longitude();
         m_altitude = info.coordinate().altitude();
         m_speed = info.attribute(QGeoPositionInfo::GroundSpeed);
-        m_direction = info.attribute(QGeoPositionInfo::Direction);
+        if(hasCompass)
+        {
+            onReadingChanged();
+        }
+        else
+        {
+            m_direction = info.attribute(QGeoPositionInfo::Direction);
+        }
         m_horizontalAccuracy = info.attribute(QGeoPositionInfo::HorizontalAccuracy);
         m_verticalAccuracy = info.attribute(QGeoPositionInfo::VerticalAccuracy);
         m_timestamp = info.timestamp().toString("yyyy-MM-dd HH:mm:ss");
@@ -247,6 +263,46 @@ void GpsManager::updateMockSatellites()
 
     qDebug() << "🔄 Mock satellites updated";
     emit satellitesUpdated();
+}
+
+void GpsManager::onReadingChanged()
+{
+    double tDirection;
+    QCompassReading *reading = compass->reading();
+    tDirection = reading->azimuth();
+    if(tDirection != m_direction)
+    {
+        m_direction = tDirection;
+        emit positionChanged();
+    }
+    if(reading->calibrationLevel() < 0.7)
+    {
+        setStatusMessage("لطفا قطب نمای خود را کالیبره کنید");
+    }
+}
+
+void GpsManager::onCopyGeoData()
+{
+    if(m_isValid)
+    {
+        QClipboard *clipBoard = QGuiApplication::clipboard();
+        clipBoard->setText("Hello Word Test");
+
+        QString Str = QString("http://www.google.com/maps/place/%1,%2/@%1,%2,30z/data=!3m1!1e3/")
+                          .arg(m_latitude).arg(m_longitude);
+        Str += QString("\nHAC:%1").arg(m_horizontalAccuracy);
+        Str += QString("\nHight:%1").arg(m_altitude);
+        Str += QString("\nGSPeed:%1 K/H").arg(m_speed);
+        Str += QString("\nDir:%1").arg(m_direction);
+        clipBoard->clear();
+        clipBoard->setText(Str);
+        setStatusMessage(QString("مختصات در clipboard قرار گرفت"));
+    }
+    else
+    {
+        setStatusMessage(QString("مختصات در دسترس نیست"));
+    }
+
 }
 
 void GpsManager::updateMockData()

@@ -184,6 +184,12 @@ ApplicationWindow {
         modal: true
         anchors.centerIn: parent
         width: Math.min(parent.width * 0.8, 400)
+        background: Rectangle {
+            color: appTheme.surface
+            border.color: appTheme.border
+            border.width: 1
+            radius: appTheme.radius
+        }
 
         ColumnLayout {
             anchors.fill: parent
