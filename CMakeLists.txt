@@ -5,38 +5,14 @@ project(QMLGPC VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS
+find_package(Qt6 6.8 REQUIRED COMPONENTS
     Core
     Quick
     Positioning
     Sensors
 )
 
-qt_standard_project_setup(REQUIRES 6.5)
-
-# =====================================================
-# تنظیمات Android
-# =====================================================
-if(ANDROID)
-    set(ANDROID_PACKAGE_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/android" CACHE INTERNAL "")
-    set(QT_ANDROID_PACKAGE_NAME "org.verya.QMLGPC" CACHE INTERNAL "")
-    set(QT_ANDROID_VERSION_NAME "1.0.0" CACHE INTERNAL "")
-    set(QT_ANDROID_VERSION_CODE "1" CACHE INTERNAL "")
-    set(QT_ANDROID_TARGET_SDK_VERSION "35" CACHE INTERNAL "")
-    set(QT_ANDROID_MIN_SDK_VERSION "28" CACHE INTERNAL "")
-
-    set(ANDROID_EXTRA_FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/android/AndroidManifest.xml"
-        "${CMAKE_CURRENT_SOURCE_DIR}/android/build.gradle"
-        "${CMAKE_CURRENT_SOURCE_DIR}/android/gradle.properties"
-        "${CMAKE_CURRENT_SOURCE_DIR}/android/gradlew"
-        "${CMAKE_CURRENT_SOURCE_DIR}/android/gradlew.bat"
-    )
-
-    message(STATUS "Android build detected")
-    message(STATUS "Android package source: ${ANDROID_PACKAGE_SOURCE_DIR}")
-    message(STATUS "Android package name: ${QT_ANDROID_PACKAGE_NAME}")
-endif()
+qt_standard_project_setup(REQUIRES 6.8)
 
 # =====================================================
 # فایل‌های پروژه
@@ -99,17 +75,11 @@ if(NOT ANDROID)
     )
 endif()
 
-# =====================================================
-# تنظیمات اضافی Android
-# =====================================================
 if(ANDROID)
-    set_property(TARGET QMLGPC APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
-        ${ANDROID_PACKAGE_SOURCE_DIR}
+    set_target_properties(QMLGPC PROPERTIES
+        QT_ANDROID_PACKAGE_SOURCE_DIR
+            ${CMAKE_CURRENT_SOURCE_DIR}/android
     )
 
-    message(STATUS "Building for Android ABI: ${ANDROID_ABI}")
-
-    add_custom_command(TARGET QMLGPC POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Android files configured in: ${ANDROID_PACKAGE_SOURCE_DIR}"
-    )
+    set(QT_ANDROID_TARGET_SDK_VERSION "35" CACHE INTERNAL "")
 endif()

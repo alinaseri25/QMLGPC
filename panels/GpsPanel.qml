@@ -11,6 +11,9 @@ Item {
     implicitHeight: mainColumn.height
 
     signal copyGeoData()
+    signal stopUpdates()
+    signal startUpdates()
+
 
     ColumnLayout {
         id: mainColumn
@@ -24,7 +27,8 @@ Item {
             spacing: 12
 
             Button {
-                text: gpsManager.isValid ? "متوقف کردن GPS" : "شروع GPS"
+                id: btnStartStop
+                text: "شروع GPS"
                 Layout.fillWidth: true
 
                 background: Rectangle {
@@ -43,20 +47,23 @@ Item {
                 }
 
                 onClicked: {
-                    if (gpsManager.isValid) {
-                        gpsManager.stopUpdates()
+                    if (text !== "شروع GPS") {
+                        stopUpdates()
                     } else {
-                        gpsManager.startUpdates()
+                        startUpdates()
                     }
                 }
             }
 
             Button {
+                id: btnCopyGeoData
                 text: "کپی کردن مختصات"
                 Layout.fillWidth: true
+                enabled: false
 
                 background: Rectangle {
                     color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
+                    opacity: parent.enabled ? 1.0 : 0.5
                     radius: theme.radius
                     border.color: theme.border
                     border.width: 1
@@ -76,9 +83,10 @@ Item {
             }
 
             Button {
+                id: btnSatelliteUpdate
                 text: "بروزرسانی ماهواره‌ها"
                 Layout.fillWidth: true
-                enabled: gpsManager.isValid
+                enabled: false
 
                 background: Rectangle {
                     color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
@@ -275,7 +283,32 @@ Item {
             Layout.bottomMargin: 32
         }
     }
+
+    Connections{
+        target: gpsManager
+        function onStateChanged(state){
+            if(state === 0)
+            {
+                btnSatelliteUpdate.enabled = false
+                btnStartStop.text = "شروع GPS"
+            }
+            else if(state === 1)
+            {
+                btnSatelliteUpdate.enabled = false
+                btnStartStop.text = "در انتظار GPS"
+            }
+            else if(state === 2)
+            {
+                btnSatelliteUpdate.enabled = true
+                btnStartStop.text = "توقف GPS"
+            }
+            btnCopyGeoData.enabled = btnSatelliteUpdate.enabled
+        }
+    }
+
     Component.onCompleted: {
         copyGeoData.connect(gpsManager.onCopyGeoData)
+        startUpdates.connect(gpsManager.startUpdates)
+        stopUpdates.connect(gpsManager.stopUpdates)
     }
 }

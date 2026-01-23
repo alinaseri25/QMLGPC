@@ -1,5 +1,50 @@
 #include "GpsManager.h"
 
+// ------- GLOBAL POINTER -------
+static GpsManager* g_mainWindowInstance = nullptr;
+
+#ifdef Q_OS_ANDROID
+extern "C"
+    JNIEXPORT void JNICALL
+    Java_org_verya_QMLGPC_TestBridge_onMessageFromKotlin(JNIEnv* env, jclass /*clazz*/, jstring msg)
+{
+    if (!g_mainWindowInstance)
+        return;
+
+    QString qmsg = QJniObject(msg).toString();
+
+    // 🧵 انتقال امن به Thread اصلی UI با Qt
+    QMetaObject::invokeMethod(g_mainWindowInstance, [=]() {
+        //g_mainWindowInstance->showMessageBox(QStringLiteral("From Kotlin: %1").arg(qmsg));
+        qDebug() << QStringLiteral("From Kotlin: %1").arg(qmsg);
+    }, Qt::QueuedConnection);
+}
+
+extern "C"
+    JNIEXPORT void JNICALL
+    Java_org_verya_QMLGPC_TestBridge_nativeOnNotificationAction(JNIEnv *, jclass /*clazz*/, jstring msg)
+{
+    if (!g_mainWindowInstance)
+        return;
+
+    QString qmsg = QJniObject(msg).toString();
+    // qDebug() << QString("Entered this point by %1").arg(qmsg);
+
+    QMetaObject::invokeMethod(g_mainWindowInstance, [=]() {
+        if(qmsg == "start")
+        {
+            g_mainWindowInstance->startUpdates();
+            //qDebug() << QStringLiteral("start pressed");
+        }
+        else if(qmsg == "stop")
+        {
+            g_mainWindowInstance->stopUpdates();
+            //qDebug() << QStringLiteral("stop pressed");
+        }
+    }, Qt::QueuedConnection);
+}
+#endif
+
 GpsManager::GpsManager(QObject *parent)
     : QObject(parent)
     , m_positionSource(nullptr)
@@ -18,7 +63,9 @@ GpsManager::GpsManager(QObject *parent)
     , m_satellitesInUse(0)
     , m_useMockData(false)
 {
+    g_mainWindowInstance = this;
     setStatusMessage("آماده برای دریافت موقعیت GPS");
+    updateNotification("GPS Ready","GPS ready to start");
 
     // Mock Timer برای Position
     connect(m_mockTimer, &QTimer::timeout, this, &GpsManager::updateMockData);
@@ -37,7 +84,20 @@ GpsManager::GpsManager(QObject *parent)
     {
         setStatusMessage(QString("دستگاه شما فاقد سنسور قطب نماست"));
         qDebug() << "read Direction From GPS Sensor";
+        updateNotification("Compass Sensor","دستگاه شما فاقد سنسور قطب نماست");
     }
+#ifdef Q_OS_ANDROID
+    QJniObject jMsg = QJniObject::fromString("Hello From C++");
+
+    QJniObject::callStaticMethod<void>(
+        cls,
+        "notifyCPlusPlus",
+        "(Ljava/lang/String;)V",
+        jMsg.object<jstring>()
+        );
+
+    qDebug()<< QString("First USE -------------------");
+#endif
 }
 
 GpsManager::~GpsManager()
@@ -59,12 +119,14 @@ void GpsManager::startUpdates()
     if (m_useMockData) {
         qDebug() << "🎭 Starting MOCK GPS updates...";
         setStatusMessage("حالت تست - داده‌های شبیه‌سازی شده");
+        updateNotification("GPS MOCK","حالت تست - داده‌های شبیه‌سازی شده");
         updateValidity(true);
         m_mockTimer->start(2000);
         m_mockSatelliteTimer->start(3000);
         generateMockSatellites();
         updateMockData();
         updateMockSatellites();
+        emit stateChanged(2);
         return;
     }
 
@@ -102,6 +164,8 @@ void GpsManager::startUpdates()
         m_satelliteSource->startUpdates();
         qDebug() << "🛰️ Satellite source started";
     }
+    emit stateChanged(1);
+    updateNotification("GPS State Changed","در حال جست و جوی سیگنال GPS");
 }
 
 void GpsManager::stopUpdates()
@@ -119,10 +183,19 @@ void GpsManager::stopUpdates()
     updateValidity(false);
     setStatusMessage("GPS متوقف شد");
     qDebug() << "🛑 GPS stopped";
+    emit stateChanged(0);
+    updateNotification("GPS State Changed","توقف جست و جوی GPS");
+    state = false;
 }
 
 void GpsManager::onPositionUpdated(const QGeoPositionInfo &info)
 {
+    if((m_isValid == true) && (state != true))
+    {
+        state = true;
+        emit stateChanged(2);
+        updateNotification("GPS State Changed","موقعیت شما پیدا شد در حال بروز رسانی هستیم");
+    }
     if (info.isValid()) {
         m_latitude = info.coordinate().latitude();
         m_longitude = info.coordinate().longitude();
@@ -172,6 +245,7 @@ void GpsManager::onError(QGeoPositionInfoSource::Error error)
 
     setStatusMessage(errorMsg);
     updateValidity(false);
+    updateNotification("GPS Error",QString("خطای زیر پیش آمد \r\n%1").arg(errorMsg));
     qDebug() << "❌ GPS Error:" << errorMsg;
 }
 
@@ -243,6 +317,50 @@ void GpsManager::generateMockSatellites()
 
     qDebug() << "🎭 Generated" << m_mockSatellites.size() << "mock satellites";
     emit satellitesUpdated();
+}
+
+void GpsManager::acquireMulticastLock()
+{
+#ifdef Q_OS_ANDROID
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+        return;
+
+    // wake lock
+    QJniObject pm = context.callObjectMethod(
+        "getSystemService",
+        "(Ljava/lang/String;)Ljava/lang/Object;",
+        QJniObject::fromString("power").object<jstring>()
+        );
+    g_wakeLock = pm.callObjectMethod(
+        "newWakeLock",
+        "(ILjava/lang/String;)Landroid/os/PowerManager$WakeLock;",
+        1, QJniObject::fromString("MyWakeLock").object<jstring>()
+        );
+    g_wakeLock.callMethod<void>("acquire");
+#endif
+}
+
+void GpsManager::updateNotification(QString Tittle, QString Text)
+{
+#ifdef Q_OS_ANDROID
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+        return;
+
+    int notifyId = 2025;
+    QJniObject jTitle = QJniObject::fromString(Tittle);
+    QJniObject jMsg   = QJniObject::fromString(Text);
+
+    QJniObject::callStaticMethod<void>(
+        cls,
+        "postNotification",
+        "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;I)V",
+        context.object(),
+        jTitle.object<jstring>(),
+        jMsg.object<jstring>(),
+        notifyId);
+#endif
 }
 
 void GpsManager::updateMockSatellites()

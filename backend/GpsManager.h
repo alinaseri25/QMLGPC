@@ -54,8 +54,6 @@ public:
 
     void setUseMockData(bool use);
 
-    Q_INVOKABLE void startUpdates();
-    Q_INVOKABLE void stopUpdates();
     Q_INVOKABLE QVariantList getSatellites() const;
 
 signals:
@@ -64,6 +62,7 @@ signals:
     void statusMessageChanged();
     void satellitesUpdated();
     void useMockDataChanged();
+    void stateChanged(int state);
 
 private slots:
     void onPositionUpdated(const QGeoPositionInfo &info);
@@ -77,12 +76,18 @@ private slots:
 
 public slots:
     void onCopyGeoData(void);
+    void startUpdates();
+    void stopUpdates();
 
 private:
     QGeoPositionInfoSource *m_positionSource;
     QGeoSatelliteInfoSource *m_satelliteSource;
     QTimer *m_mockTimer;
     QTimer *m_mockSatelliteTimer;
+#ifdef Q_OS_ANDROID
+    const char* cls = "org/verya/QMLGPC/TestBridge";
+    QJniObject g_wakeLock;
+#endif
 
     double m_latitude;
     double m_longitude;
@@ -93,6 +98,7 @@ private:
     double m_verticalAccuracy;
     QString m_timestamp;
     bool m_isValid;
+    bool state;
     QString m_statusMessage;
     int m_satelliteCount;
     int m_satellitesInUse;
@@ -107,6 +113,9 @@ private:
     void setStatusMessage(const QString &message);
     void updateValidity(bool valid);
     void generateMockSatellites();
+
+    void acquireMulticastLock(void);
+    void updateNotification(QString Tittle,QString Text);
 };
 
 #endif // GPSMANAGER_H
