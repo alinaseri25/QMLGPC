@@ -4,7 +4,7 @@
 #include "backend/GpsManager.h"
 
 #ifdef Q_OS_ANDROID
-#include <QtCore/private/qandroidextras_p.h>
+//#include <QtCore/private/qandroidextras_p.h>
 #include <QPermission>
 
 void requestLocationPermissions() {

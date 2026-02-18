@@ -62,13 +62,16 @@ Rectangle {
             Layout.alignment: Qt.AlignHCenter
             spacing: 4
 
-            Text {
+            Text {//جایی که میخواهم تغییرات اعمال شود
                 text: root.value
-                font.pixelSize: 22
+                wrapMode: Text.WordWrap
+                Layout.fillWidth: true
+                //font.pixelSize: 22
                 font.bold: true
                 color: theme.text
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
+                fontSizeMode: Text.Fit
             }
 
             Text {
