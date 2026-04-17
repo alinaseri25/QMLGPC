@@ -84,7 +84,7 @@ GpsManager::GpsManager(QObject *parent)
     {
         setStatusMessage(QString("دستگاه شما فاقد سنسور قطب نماست"));
         qDebug() << "read Direction From GPS Sensor";
-        updateNotification("Compass Sensor","دستگاه شما فاقد سنسور قطب نماست");
+        updateNotification("Compass Sensor","دستگاه شما فاقد سنسور قطب نماست",true);
     }
 #ifdef Q_OS_ANDROID
     QJniObject jMsg = QJniObject::fromString("Hello From C++");
@@ -96,7 +96,25 @@ GpsManager::GpsManager(QObject *parent)
         jMsg.object<jstring>()
         );
 
-    qDebug()<< QString("First USE -------------------");
+    QJniObject context = QNativeInterface::QAndroidApplication::context();
+    if (!context.isValid())
+        return;
+
+    QJniObject::callStaticMethod<void>(
+        "org/verya/QMLGPC/MainActivity",
+        "manageScreenAndWakeLock",
+        "(Landroid/content/Context;ZZ)V",
+        context.object(),
+        (jboolean)true,  // screenAlwaysOn
+        (jboolean)true    // wakeLock
+        );
+
+    QJniObject::callStaticMethod<void>(
+        "org/verya/QMLGPC/MainActivity",
+        "setDimTimeoutFromQt",
+        "(J)V",
+        0
+        );
 #endif
 }
 
@@ -119,7 +137,7 @@ void GpsManager::startUpdates()
     if (m_useMockData) {
         qDebug() << "🎭 Starting MOCK GPS updates...";
         setStatusMessage("حالت تست - داده‌های شبیه‌سازی شده");
-        updateNotification("GPS MOCK","حالت تست - داده‌های شبیه‌سازی شده");
+        updateNotification("GPS MOCK","حالت تست - داده‌های شبیه‌سازی شده",true);
         updateValidity(true);
         m_mockTimer->start(2000);
         m_mockSatelliteTimer->start(3000);
@@ -165,7 +183,7 @@ void GpsManager::startUpdates()
         qDebug() << "🛰️ Satellite source started";
     }
     emit stateChanged(1);
-    updateNotification("GPS State Changed","در حال جست و جوی سیگنال GPS");
+    updateNotification("GPS State Changed","در حال جست و جوی سیگنال GPS",true);
 }
 
 void GpsManager::stopUpdates()
@@ -245,7 +263,7 @@ void GpsManager::onError(QGeoPositionInfoSource::Error error)
 
     setStatusMessage(errorMsg);
     updateValidity(false);
-    updateNotification("GPS Error",QString("خطای زیر پیش آمد \r\n%1").arg(errorMsg));
+    updateNotification("GPS Error",QString("خطای زیر پیش آمد \r\n%1").arg(errorMsg),true);
     qDebug() << "❌ GPS Error:" << errorMsg;
 }
 
@@ -341,7 +359,7 @@ void GpsManager::acquireMulticastLock()
 #endif
 }
 
-void GpsManager::updateNotification(QString Tittle, QString Text)
+void GpsManager::updateNotification(QString Tittle, QString Text, bool alert)
 {
 #ifdef Q_OS_ANDROID
     QJniObject context = QNativeInterface::QAndroidApplication::context();
@@ -355,11 +373,12 @@ void GpsManager::updateNotification(QString Tittle, QString Text)
     QJniObject::callStaticMethod<void>(
         cls,
         "postNotification",
-        "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;I)V",
+        "(Landroid/content/Context;Ljava/lang/String;Ljava/lang/String;IZ)V",
         context.object(),
         jTitle.object<jstring>(),
         jMsg.object<jstring>(),
-        notifyId);
+        notifyId,
+        alert);
 #endif
 }
 

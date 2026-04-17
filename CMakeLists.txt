@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 # ✅ خواندن VERSION از فایل
-file(READ "${CMAKE_SOURCE_DIR}/VERSION" VERSION_STRING)
+file(READ "${CMAKE_SOURCE_DIR}/version.txt" VERSION_STRING)
 string(STRIP "${VERSION_STRING}" VERSION_STRING)
 
 # ✅ تجزیه version به اجزای MAJOR.MINOR.PATCH
@@ -49,6 +49,7 @@ qt_add_qml_module(QMLGPC
         theme/Theme.qml
     RESOURCES
         qtquickcontrols2.conf
+        version.txt
 )
 
 # =====================================================

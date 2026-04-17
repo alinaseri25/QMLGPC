@@ -12,13 +12,13 @@ object TestBridge {
 
     @JvmStatic
     fun notifyCPlusPlus(msg: String) {
-        Log.d("123654", "123654notifyCPlusPlus: $msg")
+        //Log.d("123654", "123654notifyCPlusPlus: $msg")
         onMessageFromKotlin(msg)
     }
 
     @JvmStatic
-    fun postNotification(ctx: Context, title: String, message: String,notifyId: Int) {
+    fun postNotification(ctx: Context, title: String, message: String,notifyId: Int,alert: Boolean) {
         val helper = NotificationHelper(ctx)
-        helper.show(title, message, notifyId)
+        helper.show(title, message, notifyId,alert)
     }
 }

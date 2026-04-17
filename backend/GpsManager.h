@@ -115,7 +115,7 @@ private:
     void generateMockSatellites();
 
     void acquireMulticastLock(void);
-    void updateNotification(QString Tittle,QString Text);
+    void updateNotification(QString Tittle,QString Text, bool alert = false);
 };
 
 #endif // GPSMANAGER_H
