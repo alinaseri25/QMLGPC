@@ -16,6 +16,12 @@
 #include <QGuiApplication>
 #include <QCompass>
 #include <QSensor>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#ifdef ANDROID
+    #include <QJniObject>
+#endif
 
 class GpsManager : public QObject
 {
@@ -78,6 +84,7 @@ public slots:
     void onCopyGeoData(void);
     void startUpdates();
     void stopUpdates();
+    void onQmlLoaded(void);
 
 private:
     QGeoPositionInfoSource *m_positionSource;
@@ -116,6 +123,7 @@ private:
 
     void acquireMulticastLock(void);
     void updateNotification(QString Tittle,QString Text, bool alert = false);
+    void askForPermission(const QStringList &permissions, int requestCode);
 };
 
 #endif // GPSMANAGER_H

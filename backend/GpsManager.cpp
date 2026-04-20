@@ -43,6 +43,37 @@ extern "C"
         }
     }, Qt::QueuedConnection);
 }
+
+extern "C"
+    JNIEXPORT void JNICALL
+        Java_org_verya_QMLGPC_TestBridge_nativeOnPermissionResult
+    (JNIEnv *env, jclass /*clazz*/, jstring msg)
+{
+    if (!g_mainWindowInstance)
+        return;
+
+    // تبدیل jstring به QString در همان thread JNI
+    QString jsonStr = QJniObject(msg).toString();
+
+    QJsonDocument doc = QJsonDocument::fromJson(jsonStr.toUtf8());
+    QJsonObject root = doc.object();
+    QJsonArray perms = root["results"].toArray();
+
+    for (const QJsonValue &v : perms) {
+        QJsonObject o = v.toObject();
+        QString permission = o["permission"].toString();
+        bool granted = o["granted"].toBool();
+        qDebug() << permission << (granted ? "✅" : "❌");
+    }
+
+    // QMetaObject::invokeMethod(g_mainWindowInstance, [=]() {
+    //     QString str = (qMsg == "start") ? "Play" : "Pause";
+
+    //     qDebug() << "str:" << str << "--msg:" << qMsg;
+
+    //     g_mainWindowInstance->onPlayPause(str);
+    // }, Qt::QueuedConnection);
+}
 #endif
 
 GpsManager::GpsManager(QObject *parent)
@@ -204,6 +235,20 @@ void GpsManager::stopUpdates()
     emit stateChanged(0);
     updateNotification("GPS State Changed","توقف جست و جوی GPS");
     state = false;
+}
+
+void GpsManager::onQmlLoaded()
+{
+#ifdef ANDROID
+    QStringList perms = {"android.permission.POST_NOTIFICATIONS",
+                        "android.permission.ACCESS_FINE_LOCATION",
+                        "android.permission.ACCESS_COARSE_LOCATION",
+                        "android.permission.ACCESS_BACKGROUND_LOCATION",
+                        "android.permission.WAKE_LOCK"};
+
+    askForPermission(perms,11);
+
+#endif
 }
 
 void GpsManager::onPositionUpdated(const QGeoPositionInfo &info)
@@ -379,6 +424,28 @@ void GpsManager::updateNotification(QString Tittle, QString Text, bool alert)
         jMsg.object<jstring>(),
         notifyId,
         alert);
+#endif
+}
+
+void GpsManager::askForPermission(const QStringList &permissions, int requestCode)
+{
+#ifdef ANDROID
+    QJniEnvironment env;
+    jobjectArray jPerms = env->NewObjectArray(permissions.size(),
+                                              env->FindClass("java/lang/String"),
+                                              nullptr);
+
+    for (int i = 0; i < permissions.size(); ++i)
+        env->SetObjectArrayElement(jPerms, i,
+                                   QJniObject::fromString(permissions[i]).object<jstring>());
+
+    QJniObject::callStaticMethod<void>(
+        "org/verya/QMLGPC/MainActivity",
+        "requestAppPermissions",
+        "([Ljava/lang/String;I)V",
+        jPerms,
+        requestCode
+        );
 #endif
 }
 

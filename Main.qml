@@ -12,6 +12,7 @@ ApplicationWindow {
     width: 400
     height: 800
     title: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
+    signal qmlLoaded()
 
     Theme {
         id: appTheme
@@ -359,5 +360,11 @@ ApplicationWindow {
                 onClicked: aboutDialog.close()
             }
         }
+    }
+
+    Component.onCompleted: {
+        qmlLoaded.connect(gpsManager.onQmlLoaded)
+
+        qmlLoaded()
     }
 }
