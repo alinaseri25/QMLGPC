@@ -15,7 +15,7 @@ Rectangle {
     implicitWidth: 180
     implicitHeight: 120
     color: theme.cardBackground
-    radius: theme.radius
+    radius: theme.radius.md
     border.color: theme.cardBorder
     border.width: 1
 
@@ -33,7 +33,7 @@ Rectangle {
             Text {
                 text: root.icon
                 font.pixelSize: 20
-                color: theme.text
+                color: theme.textPrimary
                 Layout.alignment: Qt.AlignHCenter
             }
 
@@ -68,7 +68,7 @@ Rectangle {
                 Layout.fillWidth: true
                 //font.pixelSize: 22
                 font.bold: true
-                color: theme.text
+                color: theme.textPrimary
                 Layout.alignment: Qt.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter
                 fontSizeMode: Text.Fit

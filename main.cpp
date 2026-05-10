@@ -2,6 +2,9 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include "backend/GpsManager.h"
+#include <QtQuickControls2/QQuickStyle>
+
+#include "version.h"
 
 #ifdef Q_OS_ANDROID
 //#include <QtCore/private/qandroidextras_p.h>
@@ -33,10 +36,14 @@ void requestLocationPermissions() {
 
 int main(int argc, char *argv[])
 {
+    QQuickStyle::setStyle("Material");
+    //QQuickStyle::setStyle("Fusion");
     QGuiApplication app(argc, argv);
 
+    app.setApplicationVersion(VERSION_STRING);
+
 #ifdef Q_OS_ANDROID
-    requestLocationPermissions();
+    //requestLocationPermissions();
 #endif
 
     GpsManager gpsManager;

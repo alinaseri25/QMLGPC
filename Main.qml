@@ -5,6 +5,7 @@ import QtQuick.Layouts
 import "components"
 import "panels"
 import "theme"
+import "pages"
 
 ApplicationWindow {
     id: window
@@ -106,7 +107,7 @@ ApplicationWindow {
 
                 contentItem: Text {
                     text: parent.text
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     horizontalAlignment: appTheme.textAlignment()
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 16
@@ -134,7 +135,7 @@ ApplicationWindow {
 
                 contentItem: Text {
                     text: parent.text
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     horizontalAlignment: appTheme.textAlignment()
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 16
@@ -162,7 +163,7 @@ ApplicationWindow {
 
                 contentItem: Text {
                     text: parent.text
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     horizontalAlignment: appTheme.textAlignment()
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 16
@@ -189,7 +190,7 @@ ApplicationWindow {
             color: appTheme.surface
             border.color: appTheme.border
             border.width: 1
-            radius: appTheme.radius
+            radius: appTheme.radius.md
         }
 
         ColumnLayout {
@@ -204,7 +205,7 @@ ApplicationWindow {
                 Text {
                     text: "حالت تاریک"
                     font.pixelSize: 14
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     Layout.fillWidth: true
                 }
 
@@ -223,7 +224,7 @@ ApplicationWindow {
                 Text {
                     text: "راست به چپ (RTL)"
                     font.pixelSize: 14
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     Layout.fillWidth: true
                 }
 
@@ -248,7 +249,7 @@ ApplicationWindow {
                 Text {
                     text: "حالت تست GPS (بدون ماهواره واقعی)"
                     font.pixelSize: 14
-                    color: appTheme.text
+                    color: appTheme.textPrimary
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                 }
@@ -281,83 +282,119 @@ ApplicationWindow {
     }
 
     // دیالوگ درباره
+    // Dialog {
+    //     id: aboutDialog
+    //     title: appTheme.isRTL ? "درباره" : "About"
+    //     anchors.centerIn: parent
+    //     width: Math.min(window.width * 0.9, 350)
+    //     modal: true
+
+    //     background: Rectangle {
+    //         color: appTheme.surface
+    //         border.color: appTheme.border
+    //         border.width: 1
+    //         radius: appTheme.radius
+    //     }
+
+    //     ColumnLayout {
+    //         anchors.fill: parent
+    //         spacing: appTheme.spacingMedium
+
+    //         Text {
+    //             Layout.alignment: Qt.AlignHCenter
+    //             text: "🛰️"
+    //             font.pixelSize: 64
+    //         }
+
+    //         Text {
+    //             Layout.fillWidth: true
+    //             text: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
+    //             font.pixelSize: 20
+    //             font.bold: true
+    //             color: appTheme.text
+    //             horizontalAlignment: Text.AlignHCenter
+    //         }
+
+    //         Text {
+    //             Layout.fillWidth: true
+    //             text: Qt.application.version
+    //             font.pixelSize: 14
+    //             color: appTheme.textSecondary
+    //             horizontalAlignment: Text.AlignHCenter
+    //         }
+
+    //         Rectangle {
+    //             Layout.fillWidth: true
+    //             height: 1
+    //             color: appTheme.border
+    //         }
+
+    //         Text {
+    //             Layout.fillWidth: true
+    //             text: appTheme.isRTL
+    //                 ? "یک برنامه قدرتمند برای مدیریت و نمایش داده‌های GPS"
+    //                 : "A powerful application for GPS data management and visualization"
+    //             font.pixelSize: 14
+    //             color: appTheme.textSecondary
+    //             horizontalAlignment: Text.AlignHCenter
+    //             wrapMode: Text.WordWrap
+    //         }
+
+    //         Button {
+    //             Layout.fillWidth: true
+    //             Layout.topMargin: appTheme.spacing
+    //             text: appTheme.isRTL ? "بستن" : "Close"
+
+    //             background: Rectangle {
+    //                 color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
+    //                 radius: appTheme.radius
+    //             }
+
+    //             contentItem: Text {
+    //                 text: parent.text
+    //                 color: "white"
+    //                 font.pixelSize: 14
+    //                 horizontalAlignment: Text.AlignHCenter
+    //                 verticalAlignment: Text.AlignVCenter
+    //             }
+
+    //             onClicked: aboutDialog.close()
+    //         }
+    //     }
+    // }
+
     Dialog {
         id: aboutDialog
-        title: appTheme.isRTL ? "درباره" : "About"
-        anchors.centerIn: parent
-        width: Math.min(window.width * 0.9, 350)
         modal: true
+        width: 350
+        height: 500
+        anchors.centerIn: Overlay.overlay
+        //padding: 5
 
         background: Rectangle {
             color: appTheme.surface
+            radius: appTheme.radius.md
             border.color: appTheme.border
             border.width: 1
-            radius: appTheme.radius
         }
 
-        ColumnLayout {
+        AboutDialog {
             anchors.fill: parent
-            spacing: appTheme.spacingMedium
+            theme: appTheme
 
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "🛰️"
-                font.pixelSize: 64
-            }
+            appName: "‏‏Sattellite Position Finder"
+            appVersion: Qt.application.version
+            appBuildDate: "2026-03-02"
+            appDescription: "Industrial robot monitoring and control software."
 
-            Text {
-                Layout.fillWidth: true
-                text: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
-                font.pixelSize: 20
-                font.bold: true
-                color: appTheme.text
-                horizontalAlignment: Text.AlignHCenter
-            }
+            companyName: "verya"
+            companyWebsite: "https://verya-co.ir/"
+            companyEmail: "info@verya-co.ir"
 
-            Text {
-                Layout.fillWidth: true
-                text: "Version 1.0.0"
-                font.pixelSize: 14
-                color: appTheme.textSecondary
-                horizontalAlignment: Text.AlignHCenter
-            }
+            logoSource: "qrc:/icon.png"
 
-            Rectangle {
-                Layout.fillWidth: true
-                height: 1
-                color: appTheme.border
-            }
-
-            Text {
-                Layout.fillWidth: true
-                text: appTheme.isRTL
-                    ? "یک برنامه قدرتمند برای مدیریت و نمایش داده‌های GPS"
-                    : "A powerful application for GPS data management and visualization"
-                font.pixelSize: 14
-                color: appTheme.textSecondary
-                horizontalAlignment: Text.AlignHCenter
-                wrapMode: Text.WordWrap
-            }
-
-            Button {
-                Layout.fillWidth: true
-                Layout.topMargin: appTheme.spacing
-                text: appTheme.isRTL ? "بستن" : "Close"
-
-                background: Rectangle {
-                    color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
-                    radius: appTheme.radius
-                }
-
-                contentItem: Text {
-                    text: parent.text
-                    color: "white"
-                    font.pixelSize: 14
-                    horizontalAlignment: Text.AlignHCenter
-                    verticalAlignment: Text.AlignVCenter
-                }
-
-                onClicked: aboutDialog.close()
+            onCloseRequested: {
+                aboutDialog.close()
             }
         }
     }

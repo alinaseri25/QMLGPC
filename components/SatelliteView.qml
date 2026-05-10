@@ -53,13 +53,13 @@ Item {
         color: "transparent"
         border.color: theme.border
         border.width: 1
-        radius: theme.radius
+        radius: theme.radius.md
 
         // ✅ ScrollView برای اسکرول عمودی
         ScrollView {
             id: scrollView
             anchors.fill: parent
-            anchors.margins: theme.spacing
+            anchors.margins: theme.spacing.md
             clip: true
 
             ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
@@ -147,7 +147,7 @@ Item {
                                     Layout.alignment: Qt.AlignHCenter
                                     Layout.bottomMargin: 2
                                     text: satItem.satId
-                                    color: satItem.satInUse ? theme.text : theme.textSecondary
+                                    color: satItem.satInUse ? theme.textPrimary : theme.textSecondary
                                     font.pixelSize: 11
                                     font.bold: satItem.satInUse
                                 }

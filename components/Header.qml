@@ -18,8 +18,8 @@ Rectangle {
 
     RowLayout {
         anchors.fill: parent
-        anchors.margins: theme.spacing
-        spacing: theme.spacing
+        anchors.margins: theme.spacing.md
+        spacing: theme.spacing.md
 
         // دکمه منو
         Button {
@@ -35,7 +35,7 @@ Rectangle {
 
             contentItem: Text {
                 text: parent.text
-                color: theme.text
+                color: theme.textPrimary
                 font.pixelSize: 24
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
@@ -48,9 +48,9 @@ Rectangle {
         Text {
             Layout.fillWidth: true
             text: theme.isRTL ? "مدیریت GPS" : "GPS Manager"
-            font.pixelSize: theme.fontSizeLarge
+            font.pixelSize: theme.fontSize.lg
             font.bold: true
-            color: theme.text
+            color: theme.textPrimary
             horizontalAlignment: theme.textAlignment()
         }
 
@@ -68,7 +68,7 @@ Rectangle {
 
             contentItem: Text {
                 text: parent.text
-                color: theme.text
+                color: theme.textPrimary
                 font.pixelSize: 20
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter

@@ -33,14 +33,14 @@ Item {
 
                 background: Rectangle {
                     color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
-                    radius: theme.radius
+                    radius: theme.radius.md
                     border.color: theme.border
                     border.width: 1
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: theme.text
+                    color: theme.textPrimary
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
@@ -64,14 +64,14 @@ Item {
                 background: Rectangle {
                     color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
                     opacity: parent.enabled ? 1.0 : 0.5
-                    radius: theme.radius
+                    radius: theme.radius.md
                     border.color: theme.border
                     border.width: 1
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: theme.text
+                    color: theme.textPrimary
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
@@ -91,14 +91,14 @@ Item {
                 background: Rectangle {
                     color: parent.pressed ? theme.primary : (parent.hovered ? Qt.lighter(theme.surface, 1.1) : theme.surface)
                     opacity: parent.enabled ? 1.0 : 0.5
-                    radius: theme.radius
+                    radius: theme.radius.md
                     border.color: theme.border
                     border.width: 1
                 }
 
                 contentItem: Text {
                     text: parent.text
-                    color: theme.text
+                    color: theme.textPrimary
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
                     font.pixelSize: 14
@@ -114,7 +114,7 @@ Item {
             Layout.margins: 16
             height: 50
             color: gpsManager.isValid ? theme.accentGreen : theme.accentOrange
-            radius: theme.radius
+            radius: theme.radius.md
 
             Text {
                 anchors.centerIn: parent
@@ -212,7 +212,7 @@ Item {
             Layout.margins: 16
             height: 80
             color: theme.surface
-            radius: theme.radius
+            radius: theme.radius.md
             border.color: theme.border
             border.width: 1
 
@@ -238,7 +238,7 @@ Item {
                         text: gpsManager.satelliteCount.toString()
                         font.pixelSize: 28
                         font.bold: true
-                        color: theme.text
+                        color: theme.textPrimary
                         horizontalAlignment: Text.AlignHCenter
                     }
                 }

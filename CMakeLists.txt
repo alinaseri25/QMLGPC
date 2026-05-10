@@ -15,6 +15,8 @@ math(EXPR VERSION_CODE "${VERSION_MAJOR} * 10000 + ${VERSION_MINOR} * 100 + ${VE
 
 project(QMLGPC VERSION ${VERSION_STRING} LANGUAGES CXX)
 
+configure_file(version.h.in version.h @ONLY)
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
@@ -23,6 +25,7 @@ find_package(Qt6 6.8 REQUIRED COMPONENTS
     Quick
     Positioning
     Sensors
+    QuickControls2
 )
 
 qt_standard_project_setup(REQUIRES 6.8)
@@ -36,6 +39,10 @@ qt_add_executable(QMLGPC
     backend/GpsManager.cpp
 )
 
+target_include_directories(QMLGPC PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 qt_add_qml_module(QMLGPC
     URI QMLGPC
     VERSION 1.0
@@ -45,11 +52,19 @@ qt_add_qml_module(QMLGPC
         components/GpsDataCard.qml
         components/SatelliteBar.qml
         components/SatelliteView.qml
+        components/CButton.qml
         panels/GpsPanel.qml
+        pages/AboutDialog.qml
         theme/Theme.qml
     RESOURCES
         qtquickcontrols2.conf
+)
+
+qt6_add_resources(${PROJECT_NAME} "qmlchartsgallery"
+    PREFIX "/"
+    FILES
         version.txt
+        icon.png
 )
 
 # =====================================================
@@ -60,6 +75,7 @@ target_link_libraries(QMLGPC PRIVATE
     Qt6::Quick
     Qt6::Positioning
     Qt6::Sensors
+    Qt6::QuickControls2
 )
 
 # =====================================================
