@@ -144,6 +144,17 @@ Item {
                                     color: theme.textSecondary
                                     Layout.fillWidth: true
                                     wrapMode: Text.Wrap
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            Qt.openUrlExternally(
+                                                root.companyWebsite.startsWith("http")
+                                                    ? root.companyWebsite
+                                                    : "https://" + root.companyWebsite
+                                            )
+                                        }
+                                    }
                                 }
                             }
 
@@ -165,6 +176,13 @@ Item {
                                     color: theme.textSecondary
                                     Layout.fillWidth: true
                                     wrapMode: Text.Wrap
+
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            Qt.openUrlExternally("mailto:" + root.companyEmail)
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -25,18 +25,18 @@ Rectangle {
         Button {
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
-            text: "☰"
+            text: "≡"
             flat: true
 
             background: Rectangle {
                 color: parent.hovered ? theme.hoverColor : "transparent"
-                radius: theme.radius
+                radius: theme.radius.md
             }
 
             contentItem: Text {
                 text: parent.text
                 color: theme.textPrimary
-                font.pixelSize: 24
+                font.pixelSize: theme.fontSize.md
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
             }
@@ -63,7 +63,7 @@ Rectangle {
 
             background: Rectangle {
                 color: parent.hovered ? theme.hoverColor : "transparent"
-                radius: theme.radius
+                radius: theme.radius.md
             }
 
             contentItem: Text {

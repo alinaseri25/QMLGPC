@@ -279,6 +279,7 @@ void GpsManager::onPositionUpdated(const QGeoPositionInfo &info)
         updateValidity(true);
         setStatusMessage("موقعیت دریافت شد");
         emit positionChanged();
+        emit stateChanged(2);
 
         qDebug() << "📍 Position:" << m_latitude << "," << m_longitude;
     }
