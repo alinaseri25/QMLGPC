@@ -12,14 +12,19 @@ ApplicationWindow {
     visible: true
     width: 400
     height: 800
-    title: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
+
+    function tr(fa, en) {
+        return appTheme.isRTL ? fa : en
+    }
+
+    title: tr("مدیریت GPS پیشرفته", "Advanced GPS Manager")
+
     signal qmlLoaded()
 
     Theme {
         id: appTheme
     }
 
-    // فعال‌سازی RTL برای کل برنامه
     LayoutMirroring.enabled: appTheme.isRTL
     LayoutMirroring.childrenInherit: true
 
@@ -33,7 +38,6 @@ ApplicationWindow {
         onSettingsClicked: settingsDialog.open()
     }
 
-    // محتوای اصلی
     ScrollView {
         anchors.fill: parent
         clip: true
@@ -44,7 +48,6 @@ ApplicationWindow {
         }
     }
 
-    // منوی کشویی
     Drawer {
         id: menuDrawer
         width: Math.min(window.width * 0.7, 300)
@@ -61,7 +64,6 @@ ApplicationWindow {
             anchors.fill: parent
             spacing: 0
 
-            // هدر منو
             Rectangle {
                 width: parent.width
                 height: 120
@@ -78,7 +80,7 @@ ApplicationWindow {
                     }
 
                     Text {
-                        text: appTheme.isRTL ? "مدیریت GPS" : "GPS Manager"
+                        text: tr("مدیریت GPS", "GPS Manager")
                         font.pixelSize: 20
                         font.bold: true
                         color: "white"
@@ -93,10 +95,9 @@ ApplicationWindow {
                 color: appTheme.border
             }
 
-            // دکمه داده‌های GPS
             Button {
                 width: parent.width
-                text: appTheme.isRTL ? "📍 داده‌های GPS" : "📍 GPS Data"
+                text: tr("📍 داده‌های GPS", "📍 GPS Data")
                 flat: true
                 height: 50
 
@@ -121,10 +122,9 @@ ApplicationWindow {
                 }
             }
 
-            // دکمه تنظیمات
             Button {
                 width: parent.width
-                text: appTheme.isRTL ? "⚙️ تنظیمات" : "⚙️ Settings"
+                text: tr("⚙️ تنظیمات", "⚙️ Settings")
                 flat: true
                 height: 50
 
@@ -149,10 +149,9 @@ ApplicationWindow {
                 }
             }
 
-            // دکمه درباره
             Button {
                 width: parent.width
-                text: appTheme.isRTL ? "ℹ️ درباره" : "ℹ️ About"
+                text: tr("ℹ️ درباره", "ℹ️ About")
                 flat: true
                 height: 50
 
@@ -179,13 +178,13 @@ ApplicationWindow {
         }
     }
 
-    // دیالوگ تنظیمات
     Dialog {
         id: settingsDialog
-        title: "تنظیمات"
+        title: tr("تنظیمات", "Settings")
         modal: true
         anchors.centerIn: parent
         width: Math.min(parent.width * 0.8, 400)
+
         background: Rectangle {
             color: appTheme.surface
             border.color: appTheme.border
@@ -197,13 +196,12 @@ ApplicationWindow {
             anchors.fill: parent
             spacing: 20
 
-            // Dark Mode
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 12
 
                 Text {
-                    text: "حالت تاریک"
+                    text: tr("حالت تاریک", "Dark Mode")
                     font.pixelSize: 14
                     color: appTheme.textPrimary
                     Layout.fillWidth: true
@@ -216,13 +214,12 @@ ApplicationWindow {
                 }
             }
 
-            // RTL Mode
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 12
 
                 Text {
-                    text: "راست به چپ (RTL)"
+                    text: tr("راست به چپ (RTL)", "Right To Left (RTL)")
                     font.pixelSize: 14
                     color: appTheme.textPrimary
                     Layout.fillWidth: true
@@ -241,13 +238,12 @@ ApplicationWindow {
                 color: appTheme.border
             }
 
-            // Mock GPS Mode (جدید)
             RowLayout {
                 Layout.fillWidth: true
                 spacing: 12
 
                 Text {
-                    text: "حالت تست GPS (بدون ماهواره واقعی)"
+                    text: tr("حالت تست GPS (بدون ماهواره واقعی)", "Mock GPS Mode (No real satellites)")
                     font.pixelSize: 14
                     color: appTheme.textPrimary
                     Layout.fillWidth: true
@@ -257,9 +253,9 @@ ApplicationWindow {
                 Switch {
                     id: mockGpsSwitch
                     checked: gpsManager.useMockData
+
                     onCheckedChanged: {
                         gpsManager.useMockData = checked
-                        // اگر GPS فعاله، restart کن
                         if (gpsManager.isValid) {
                             gpsManager.stopUpdates()
                             gpsManager.startUpdates()
@@ -270,7 +266,10 @@ ApplicationWindow {
 
             Text {
                 Layout.fillWidth: true
-                text: "⚠️ این حالت فقط برای تست در محیط‌هایی که GPS ندارند استفاده شود"
+                text: tr(
+                        "⚠️ این حالت فقط برای تست در محیط‌هایی که GPS ندارند استفاده شود",
+                        "⚠️ This mode should only be used for testing where GPS is unavailable"
+                    )
                 font.pixelSize: 11
                 color: appTheme.accentOrange
                 wrapMode: Text.WordWrap
@@ -281,95 +280,12 @@ ApplicationWindow {
         standardButtons: Dialog.Close
     }
 
-    // دیالوگ درباره
-    // Dialog {
-    //     id: aboutDialog
-    //     title: appTheme.isRTL ? "درباره" : "About"
-    //     anchors.centerIn: parent
-    //     width: Math.min(window.width * 0.9, 350)
-    //     modal: true
-
-    //     background: Rectangle {
-    //         color: appTheme.surface
-    //         border.color: appTheme.border
-    //         border.width: 1
-    //         radius: appTheme.radius
-    //     }
-
-    //     ColumnLayout {
-    //         anchors.fill: parent
-    //         spacing: appTheme.spacingMedium
-
-    //         Text {
-    //             Layout.alignment: Qt.AlignHCenter
-    //             text: "🛰️"
-    //             font.pixelSize: 64
-    //         }
-
-    //         Text {
-    //             Layout.fillWidth: true
-    //             text: appTheme.isRTL ? "مدیریت GPS پیشرفته" : "Advanced GPS Manager"
-    //             font.pixelSize: 20
-    //             font.bold: true
-    //             color: appTheme.text
-    //             horizontalAlignment: Text.AlignHCenter
-    //         }
-
-    //         Text {
-    //             Layout.fillWidth: true
-    //             text: Qt.application.version
-    //             font.pixelSize: 14
-    //             color: appTheme.textSecondary
-    //             horizontalAlignment: Text.AlignHCenter
-    //         }
-
-    //         Rectangle {
-    //             Layout.fillWidth: true
-    //             height: 1
-    //             color: appTheme.border
-    //         }
-
-    //         Text {
-    //             Layout.fillWidth: true
-    //             text: appTheme.isRTL
-    //                 ? "یک برنامه قدرتمند برای مدیریت و نمایش داده‌های GPS"
-    //                 : "A powerful application for GPS data management and visualization"
-    //             font.pixelSize: 14
-    //             color: appTheme.textSecondary
-    //             horizontalAlignment: Text.AlignHCenter
-    //             wrapMode: Text.WordWrap
-    //         }
-
-    //         Button {
-    //             Layout.fillWidth: true
-    //             Layout.topMargin: appTheme.spacing
-    //             text: appTheme.isRTL ? "بستن" : "Close"
-
-    //             background: Rectangle {
-    //                 color: parent.pressed ? Qt.darker(appTheme.primary, 1.2) : (parent.hovered ? Qt.lighter(appTheme.primary, 1.1) : appTheme.primary)
-    //                 radius: appTheme.radius
-    //             }
-
-    //             contentItem: Text {
-    //                 text: parent.text
-    //                 color: "white"
-    //                 font.pixelSize: 14
-    //                 horizontalAlignment: Text.AlignHCenter
-    //                 verticalAlignment: Text.AlignVCenter
-    //             }
-
-    //             onClicked: aboutDialog.close()
-    //         }
-    //     }
-    // }
-
     Dialog {
         id: aboutDialog
         modal: true
         width: 350
         height: 500
         anchors.centerIn: Overlay.overlay
-        //padding: 5
 
         background: Rectangle {
             color: appTheme.surface
@@ -382,7 +298,7 @@ ApplicationWindow {
             anchors.fill: parent
             theme: appTheme
 
-            appName: "‏‏Sattellite Position Finder"
+            appName: "Sattellite Position Finder"
             appVersion: Qt.application.version
             appBuildDate: "2026-03-02"
             appDescription: "Industrial robot monitoring and control software."
@@ -401,7 +317,6 @@ ApplicationWindow {
 
     Component.onCompleted: {
         qmlLoaded.connect(gpsManager.onQmlLoaded)
-
         qmlLoaded()
     }
 }

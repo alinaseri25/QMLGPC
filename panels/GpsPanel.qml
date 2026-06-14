@@ -7,13 +7,17 @@ import "../components"
 Item {
     required property var theme
 
+    // تابعی برای ترجمه سریع و شرطی
+    function tr(fa, en) {
+        return theme.isRTL ? fa : en
+    }
+
     id: root
     implicitHeight: mainColumn.height
 
     signal copyGeoData()
     signal stopUpdates()
     signal startUpdates()
-
 
     ColumnLayout {
         id: mainColumn
@@ -28,7 +32,7 @@ Item {
 
             Button {
                 id: btnStartStop
-                text: "شروع GPS"
+                text: tr("شروع GPS", "Start GPS")
                 Layout.fillWidth: true
 
                 background: Rectangle {
@@ -47,7 +51,8 @@ Item {
                 }
 
                 onClicked: {
-                    if (text !== "شروع GPS") {
+                    // استفاده از tr برای مقایسه منطقی
+                    if (text !== tr("شروع GPS", "Start GPS")) {
                         stopUpdates()
                     } else {
                         startUpdates()
@@ -57,7 +62,7 @@ Item {
 
             Button {
                 id: btnCopyGeoData
-                text: "کپی کردن مختصات"
+                text: tr("کپی کردن مختصات", "Copy Coordinates")
                 Layout.fillWidth: true
                 enabled: false
 
@@ -84,7 +89,7 @@ Item {
 
             Button {
                 id: btnSatelliteUpdate
-                text: "بروزرسانی ماهواره‌ها"
+                text: tr("بروزرسانی ماهواره‌ها", "Update Satellites")
                 Layout.fillWidth: true
                 enabled: false
 
@@ -136,7 +141,7 @@ Item {
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "عرض جغرافیایی"
+                title: tr("عرض جغرافیایی", "Latitude")
                 value: gpsManager.isValid ? gpsManager.latitude.toFixed(6) : "---"
                 unit: "°"
                 icon: "📍"
@@ -145,7 +150,7 @@ Item {
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "طول جغرافیایی"
+                title: tr("طول جغرافیایی", "Longitude")
                 value: gpsManager.isValid ? gpsManager.longitude.toFixed(6) : "---"
                 unit: "°"
                 icon: "📍"
@@ -154,52 +159,52 @@ Item {
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "ارتفاع"
+                title: tr("ارتفاع", "Altitude")
                 value: gpsManager.isValid ? gpsManager.altitude.toFixed(1) : "---"
-                unit: "متر"
+                unit: tr("متر", "m")
                 icon: "⛰️"
             }
 
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "سرعت"
+                title: tr("سرعت", "Speed")
                 value: gpsManager.isValid ? (gpsManager.speed * 3.6).toFixed(1) : "---"
-                unit: "کیلومتر/ساعت"
+                unit: tr("کیلومتر/ساعت", "km/h")
                 icon: "🚀"
             }
 
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "جهت"
+                title: tr("جهت", "Direction")
                 value: gpsManager.isValid ? gpsManager.direction.toFixed(0) : "---"
-                unit: "درجه"
+                unit: tr("درجه", "deg")
                 icon: "🧭"
             }
 
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "دقت افقی"
+                title: tr("دقت افقی", "Horizontal Accuracy")
                 value: gpsManager.isValid ? gpsManager.horizontalAccuracy.toFixed(1) : "---"
-                unit: "متر"
+                unit: tr("متر", "m")
                 icon: "📏"
             }
 
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "دقت عمودی"
+                title: tr("دقت عمودی", "Vertical Accuracy")
                 value: gpsManager.isValid ? gpsManager.verticalAccuracy.toFixed(1) : "---"
-                unit: "متر"
+                unit: tr("متر", "m")
                 icon: "📐"
             }
 
             GpsDataCard {
                 theme: root.theme
                 Layout.fillWidth: true
-                title: "زمان"
+                title: tr("زمان", "Time")
                 value: gpsManager.isValid ? gpsManager.timestamp : "---"
                 unit: ""
                 icon: "⏰"
@@ -227,7 +232,7 @@ Item {
 
                     Text {
                         width: parent.width
-                        text: "کل ماهواره‌ها"
+                        text: tr("کل ماهواره‌ها", "Total Satellites")
                         font.pixelSize: 12
                         color: theme.textSecondary
                         horizontalAlignment: Text.AlignHCenter
@@ -255,7 +260,7 @@ Item {
 
                     Text {
                         width: parent.width
-                        text: "در حال استفاده"
+                        text: tr("در حال استفاده", "In Use")
                         font.pixelSize: 12
                         color: theme.textSecondary
                         horizontalAlignment: Text.AlignHCenter
@@ -290,17 +295,17 @@ Item {
             if(state === 0)
             {
                 btnSatelliteUpdate.enabled = false
-                btnStartStop.text = "شروع GPS"
+                btnStartStop.text = tr("شروع GPS", "Start GPS")
             }
             else if(state === 1)
             {
                 btnSatelliteUpdate.enabled = false
-                btnStartStop.text = "در انتظار GPS"
+                btnStartStop.text = tr("در انتظار GPS", "Waiting for GPS")
             }
             else if(state === 2)
             {
                 btnSatelliteUpdate.enabled = true
-                btnStartStop.text = "توقف GPS"
+                btnStartStop.text = tr("توقف GPS", "Stop GPS")
             }
             btnCopyGeoData.enabled = btnSatelliteUpdate.enabled
         }

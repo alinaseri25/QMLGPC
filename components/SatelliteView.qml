@@ -14,12 +14,12 @@ Item {
         target: gpsManager
 
         function onSatellitesUpdated() {
-            console.log("🔔 onSatellitesUpdated signal received!")
+            //console.log("🔔 onSatellitesUpdated signal received!")
             updateTimer.restart()
         }
 
         function onSatelliteCountChanged() {
-            console.log("🔔 onSatelliteCountChanged signal received!")
+            //console.log("🔔 onSatelliteCountChanged signal received!")
             updateTimer.restart()
         }
     }
@@ -31,15 +31,15 @@ Item {
         repeat: false
         onTriggered: {
             var sats = gpsManager.getSatellites()
-            console.log("🔄 Updating satellite model, count:", sats.length)
+            //console.log("🔄 Updating satellite model, count:", sats.length)
 
             // ✅ چاپ دقیق property ها
             for (var i = 0; i < Math.min(sats.length, 3); i++) {
                 var sat = sats[i]
-                console.log("📡 SAT", (i+1), "| ID:", sat.id,
-                           "| System:", sat.system,
-                           "| SignalStrength:", sat.signalStrength,  // ✅ درست!
-                           "| InUse:", sat.inUse)
+                //console.log("📡 SAT", (i+1), "| ID:", sat.id,
+                //           "| System:", sat.system,
+                //           "| SignalStrength:", sat.signalStrength,  // ✅ درست!
+                //           "| InUse:", sat.inUse)
             }
 
             // ✅ به‌روزرسانی بدون لوپ
@@ -214,7 +214,7 @@ Item {
 
     // ✅ به‌روزرسانی اولیه
     Component.onCompleted: {
-        console.log("✅ SatelliteView initialized")
+        //console.log("✅ SatelliteView initialized")
         updateTimer.start()
     }
 }
